@@ -3,10 +3,49 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:RS232_UI"
+        xmlns:local="clr-namespace:RS232_UI" xmlns:x1="clr-namespace:RS232_Model.Helpers;assembly=RS232-Model"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="480" Width="640">
     <Grid>
-        <ComboBox x:Name="PortsCombo" HorizontalAlignment="Left" Margin="60,60,0,0" VerticalAlignment="Top" Width="120" ItemsSource="{Binding Ports}"/>
+        <ComboBox x:Name="PortsCombo" HorizontalAlignment="Left" Margin="50,40,0,0" VerticalAlignment="Top" Width="120" ItemsSource="{Binding Ports}" SelectedValue="{Binding Path=SelectedPort}" Height="25" />
+        <ComboBox HorizontalAlignment="Left" Margin="50,90,0,0" VerticalAlignment="Top" Width="120" 
+                  ItemsSource="{Binding Path=SelectedDataBits, Converter={x1:EnumToCollectionConverter}, Mode=OneTime}" 
+                  SelectedValuePath="Value"
+                  DisplayMemberPath="Description"
+                  SelectedValue="{Binding Path=SelectedDataBits}" Height="25" />
+        <ComboBox HorizontalAlignment="Left" Margin="50,140,0,0" VerticalAlignment="Top" Width="120" 
+                  ItemsSource="{Binding Path=SelectedParity, Converter={x1:EnumToCollectionConverter}, Mode=OneTime}" 
+                  SelectedValuePath="Value"
+                  DisplayMemberPath="Description"
+                  SelectedValue="{Binding Path=SelectedParity}" Height="25"/>
+        <ComboBox HorizontalAlignment="Left" Margin="50,190,0,0" VerticalAlignment="Top" Width="120" 
+                  ItemsSource="{Binding Path=SelectedStopBits, Converter={x1:EnumToCollectionConverter}, Mode=OneTime}" 
+                  SelectedValuePath="Value"
+                  DisplayMemberPath="Description"
+                  SelectedValue="{Binding Path=SelectedStopBits}" Height="25"/>
+        <ComboBox HorizontalAlignment="Left" Margin="50,240,0,0" VerticalAlignment="Top" Width="120" 
+                  ItemsSource="{Binding Path=SelectedTerminator, Converter={x1:EnumToCollectionConverter}, Mode=OneTime}" 
+                  SelectedValuePath="Value"
+                  DisplayMemberPath="Description"
+                  SelectedValue="{Binding Path=SelectedTerminator}" Height="25"/>
+        <ComboBox HorizontalAlignment="Left" Margin="50,290,0,0" VerticalAlignment="Top" Width="120" 
+                  ItemsSource="{Binding Path=SelectedFlowControl, Converter={x1:EnumToCollectionConverter}, Mode=OneTime}" 
+                  SelectedValuePath="Value"
+                  DisplayMemberPath="Description"
+                  SelectedValue="{Binding Path=SelectedFlowControl}" Height="25"/>
+        <TextBox HorizontalAlignment="Left" Margin="50,340,0,0" Text="9600&#xD;&#xA;" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="25" FontSize="16" PreviewTextInput="NumberValidationTextBox" TextChanged="TextChanged"/>
+        <TextBox HorizontalAlignment="Left" Margin="240,50,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="350" Height="140"/>
+        <TextBox HorizontalAlignment="Left" Margin="240,270,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="350" Height="140"/>
+        <Button x:Name="SendButton" Content="Wyślij" HorizontalAlignment="Left" Margin="315,200,0,0" VerticalAlignment="Top" Width="200" Height="30" Click="SendData" FontSize="16"/>
+        <TextBlock HorizontalAlignment="Left" Margin="240,20,0,0" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="-0.081,-0.574" Width="99" FontSize="18" Height="30"><Run Language="pl-pl" Text="Wysyłanie"/><LineBreak/><Run Language="pl-pl"/></TextBlock>
+        <TextBlock HorizontalAlignment="Left" Margin="240,240,0,0" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="-0.081,-0.574" Width="99" FontSize="18" Height="26"><Run Text="O"/><Run Language="pl-pl" Text="dbieranie"/><LineBreak/><Run Language="pl-pl"/></TextBlock>
+        <Button Content="Otwórz połączenie" HorizontalAlignment="Left" Margin="50,380,0,0" VerticalAlignment="Top" Width="120" Height="30" FontSize="13" Click="InitializeConnection"/>
+        <TextBlock HorizontalAlignment="Left" Margin="50,20,0,0" Text="Port" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="13"/>
+        <TextBlock HorizontalAlignment="Left" Margin="50,70,0,0" Text="Bity danych" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="13"/>
+        <TextBlock HorizontalAlignment="Left" Margin="50,120,0,0" Text="Bity parzystości" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="13"/>
+        <TextBlock HorizontalAlignment="Left" Margin="50,170,0,0" Text="Bity stopu" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="13"/>
+        <TextBlock HorizontalAlignment="Left" Margin="50,220,0,0" Text="Terminator" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="13"/>
+        <TextBlock HorizontalAlignment="Left" Margin="50,270,0,0" Text="Kontrola przepływu" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="13"/>
+        <TextBlock HorizontalAlignment="Left" Margin="50,320,0,0" Text="Szybkość (bps)" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="13"/>
     </Grid>
 </Window>
