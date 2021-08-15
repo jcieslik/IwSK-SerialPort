@@ -43,6 +43,10 @@ namespace RS232_UI
                     textbox.Text = "115200";
                 else if (value < 150)
                     textbox.Text = "150";
+            } 
+            else
+            {
+                textbox.Text = "150";
             }
         }
 
