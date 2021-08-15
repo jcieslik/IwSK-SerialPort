@@ -35,7 +35,7 @@
                   SelectedValue="{Binding Path=SelectedFlowControl}" Height="25"/>
         <TextBox HorizontalAlignment="Left" Margin="50,340,0,0" Text="9600&#xD;&#xA;" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="25" FontSize="16" PreviewTextInput="NumberValidationTextBox" TextChanged="TextChanged"/>
         <TextBox HorizontalAlignment="Left" Margin="240,50,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="350" Height="140"/>
-        <TextBox HorizontalAlignment="Left" Margin="240,270,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="350" Height="140"/>
+        <TextBox HorizontalAlignment="Left" Margin="240,270,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="350" Height="140" IsEnabled="False"/>
         <Button x:Name="SendButton" Content="Wyślij" HorizontalAlignment="Left" Margin="315,200,0,0" VerticalAlignment="Top" Width="200" Height="30" Click="SendData" FontSize="16"/>
         <TextBlock HorizontalAlignment="Left" Margin="240,20,0,0" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="-0.081,-0.574" Width="99" FontSize="18" Height="30"><Run Language="pl-pl" Text="Wysyłanie"/><LineBreak/><Run Language="pl-pl"/></TextBlock>
         <TextBlock HorizontalAlignment="Left" Margin="240,240,0,0" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="-0.081,-0.574" Width="99" FontSize="18" Height="26"><Run Text="O"/><Run Language="pl-pl" Text="dbieranie"/><LineBreak/><Run Language="pl-pl"/></TextBlock>
