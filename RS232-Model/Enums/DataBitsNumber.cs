@@ -4,9 +4,9 @@ namespace RS232_Model.Enums
 {
     public enum DataBitsNumber
     {
-        [Description("1")]
-        Seven,
-        [Description("2")]
-        Eight
+        [Description("7")]
+        Seven = 7,
+        [Description("8")]
+        Eight = 8
     }
 }

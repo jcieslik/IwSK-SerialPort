@@ -14,6 +14,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using RS232_Model.Model;
+using RS232_Model.Enums;
 
 namespace RS232_UI
 {
@@ -22,6 +24,8 @@ namespace RS232_UI
     /// </summary>
     public partial class MainWindow : Window
     {
+        SerialPortHandler handler = new SerialPortHandler();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -52,12 +56,52 @@ namespace RS232_UI
 
         private void InitializeConnection(object sender, RoutedEventArgs e)
         {
-            // TODO: Inicjalizacja połączenia (ustawienie parametrów z formatki)
+            ConfigureHandler();
+            try
+            {
+                handler.Open();
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void ConfigureHandler()
+        {
+            handler.PortName = (string)PortsCombo.SelectedItem;
+            handler.DataBitsNumber = (DataBitsNumber)DataBitsCombo.SelectedValue;
+            handler.ParityBitsNumber = (ParityBitsNumber)ParityBitsCombo.SelectedValue;
+            handler.StopBitsNumber = (StopBitsNumber)StopBitsCombo.SelectedValue;
+            handler.Terminator = (Terminator)TerminatorCombo.SelectedValue;
+            handler.FlowControlType = (FlowControlType)FlowControlCombo.SelectedValue;
+            if (int.TryParse(BaudRateTextBox.Text, out int baudRate))
+            {
+                handler.BaudRate = baudRate;
+            }
+            else
+            {
+                handler.BaudRate = 150;
+            }
+            handler.ByteRead += ReceiveData;
         }
 
         private void SendData(object sender, RoutedEventArgs e)
         {
-            // TODO: Wysylanie danych na przycisku "Wyslij"
+            try
+            {
+                handler.Write(SendTextBox.Text);
+                SendTextBox.Text = "";
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void ReceiveData(object sender, ByteReceivedEventArgs e)
+        {
+            ReceiveTextBox.Dispatcher.Invoke(() => ReceiveTextBox.Text += Convert.ToChar(e.ReceivedByte));
         }
     }
 }

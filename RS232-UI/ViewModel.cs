@@ -10,8 +10,8 @@ namespace RS232_UI
         public IEnumerable<string> Ports { get; set; }
         public string SelectedPort { get; set; }
         public ParityBitsNumber SelectedParity { get; set; }
-        public StopBitsNumber SelectedStopBits { get; set; }
-        public DataBitsNumber SelectedDataBits { get; set; }
+        public StopBitsNumber SelectedStopBits { get; set; } = StopBitsNumber.One;
+        public DataBitsNumber SelectedDataBits { get; set; } = DataBitsNumber.Eight;
         public Terminator SelectedTerminator { get; set; }
         public FlowControlType SelectedFlowControl { get; set; }
 

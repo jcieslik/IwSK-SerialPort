@@ -7,8 +7,8 @@ namespace RS232_Model.Enums
         [Description("Brak")]
         None,
         [Description("Bit nieparzystości")]
-        Odd,
+        Odd = 1,
         [Description("Bit parzystości")]
-        Even
+        Even = 2
     }
 }

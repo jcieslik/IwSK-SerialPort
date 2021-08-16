@@ -5,8 +5,8 @@ namespace RS232_Model.Enums
     public enum StopBitsNumber
     {
         [Description("1")]
-        One,
+        One = 1,
         [Description("2")]
-        Two
+        Two = 2
     }
 }

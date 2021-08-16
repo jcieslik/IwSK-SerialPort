@@ -5,13 +5,13 @@ namespace RS232_Model.Enums
     public enum FlowControlType
     {
         [Description("Brak")]
-        None,
+        None = 0,
         [Description("DTR/DSR")]
-        DtrDsr,
+        DtrDsr = 3,
         [Description("RTS/CTS")]
-        RtsCts,
+        RtsCts = 2,
         [Description("XON/XOFF")]
-        XOnXOff,
+        XOnXOff = 1,
 
     }
 }
