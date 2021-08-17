@@ -14,12 +14,14 @@ namespace RS232_Model.Model
 
         private SerialPort serialPort;
         private string terminatorString = "";
+        private bool dtrDsrHandshake = false;
         
         public DataBitsNumber DataBitsNumber { get; set; }
         public FlowControlType FlowControlType { get; set; }
         public ParityBitsNumber ParityBitsNumber { get; set; }
         public StopBitsNumber StopBitsNumber { get; set; }
         public Terminator Terminator { get; set; }
+        public string CustomTerminator { get; set; }
         public string PortName { get; set; }
         public int BaudRate { get; set; }
 
@@ -60,6 +62,10 @@ namespace RS232_Model.Model
             }
             ConfigureSerialPort();
             serialPort.Open();
+            if (dtrDsrHandshake)
+            {
+                serialPort.DtrEnable = true;
+            }
             Task.Run(() => Read());
         }
 
@@ -68,8 +74,15 @@ namespace RS232_Model.Model
             serialPort.Close();
         }
 
-        public void Write(string text)
+        public async Task WriteAsync(string text)
         {
+            if (dtrDsrHandshake)
+            {
+                while (!serialPort.DsrHolding)
+                {
+                    await Task.Delay(1);
+                }
+            }
             serialPort.Write(text);
             if (terminatorString.Length > 0)
             {
@@ -77,8 +90,15 @@ namespace RS232_Model.Model
             }
         }
 
-        public void Write(byte[] bytes)
+        public async void WriteAsync(byte[] bytes)
         {
+            if (dtrDsrHandshake)
+            {
+                while (!serialPort.DsrHolding)
+                {
+                    await Task.Delay(1);
+                }
+            }
             serialPort.Write(bytes, 0, bytes.Length);
             if (terminatorString.Length > 0)
             {
@@ -89,7 +109,17 @@ namespace RS232_Model.Model
         private void ConfigureSerialPort()
         {
             serialPort.DataBits = (int)DataBitsNumber;
-            serialPort.Handshake = (Handshake)FlowControlType;
+            if(FlowControlType != FlowControlType.DtrDsr)
+            {
+                serialPort.Handshake = (Handshake)FlowControlType;
+                dtrDsrHandshake = false;
+            }
+            else
+            {
+                serialPort.Handshake = Handshake.None;
+                dtrDsrHandshake = true;
+            }
+            
             serialPort.Parity = (Parity)ParityBitsNumber;
             serialPort.StopBits = (StopBits)StopBitsNumber;
             serialPort.PortName = PortName;

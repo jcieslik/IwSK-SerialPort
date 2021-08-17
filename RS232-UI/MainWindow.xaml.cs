@@ -86,11 +86,11 @@ namespace RS232_UI
             handler.ByteRead += ReceiveData;
         }
 
-        private void SendData(object sender, RoutedEventArgs e)
+        private async void SendData(object sender, RoutedEventArgs e)
         {
             try
             {
-                handler.Write(SendTextBox.Text);
+                await handler.WriteAsync(SendTextBox.Text);
                 SendTextBox.Text = "";
             }
             catch(Exception ex)
