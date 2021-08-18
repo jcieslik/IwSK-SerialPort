@@ -128,7 +128,7 @@ namespace RS232_UI
             {
                 PingTextBox.Text += "PING";
                 long elapsedTime = await handler.PingAsync();
-                PingTextBox.Text += " - OK - " + elapsedTime; 
+                PingTextBox.Text += " - OK - " + elapsedTime + "ms";
             }
             catch (Exception ex)
             {
