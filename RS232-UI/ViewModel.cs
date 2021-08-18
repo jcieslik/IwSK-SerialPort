@@ -18,7 +18,7 @@ namespace RS232_UI
         public ViewModel()
         {
             Ports = SerialPort.GetPortNames();
-            SelectedPort = Ports.First() ?? "";
+            SelectedPort = Ports.FirstOrDefault();
         }
     }
 }

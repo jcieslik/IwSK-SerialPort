@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using RS232_Model.Model;
 using RS232_Model.Enums;
+using System.Diagnostics;
 
 namespace RS232_UI
 {
@@ -38,7 +39,7 @@ namespace RS232_UI
             e.Handled = regex.IsMatch(e.Text);
         }
 
-        private void TextChanged(object sender, TextChangedEventArgs e)
+        private void BaudRateTextChanged(object sender, TextChangedEventArgs e)
         {
             var textbox = sender as TextBox;
             if (int.TryParse(textbox.Text, out int value))
@@ -56,9 +57,9 @@ namespace RS232_UI
 
         private void InitializeConnection(object sender, RoutedEventArgs e)
         {
-            ConfigureHandler();
             try
             {
+                ConfigureHandler();
                 handler.Open();
             }
             catch(Exception ex)
@@ -69,12 +70,17 @@ namespace RS232_UI
 
         private void ConfigureHandler()
         {
+            if ((Terminator)TerminatorCombo.SelectedValue == Terminator.Custom && TerminatorTextBox.Text.Length == 0)
+            {
+                throw new Exception("Terminator string must have one or two characters!");
+            }
             handler.PortName = (string)PortsCombo.SelectedItem;
             handler.DataBitsNumber = (DataBitsNumber)DataBitsCombo.SelectedValue;
             handler.ParityBitsNumber = (ParityBitsNumber)ParityBitsCombo.SelectedValue;
             handler.StopBitsNumber = (StopBitsNumber)StopBitsCombo.SelectedValue;
             handler.Terminator = (Terminator)TerminatorCombo.SelectedValue;
             handler.FlowControlType = (FlowControlType)FlowControlCombo.SelectedValue;
+            handler.CustomTerminator = TerminatorTextBox.Text;
             if (int.TryParse(BaudRateTextBox.Text, out int baudRate))
             {
                 handler.BaudRate = baudRate;
@@ -102,6 +108,32 @@ namespace RS232_UI
         private void ReceiveData(object sender, ByteReceivedEventArgs e)
         {
             ReceiveTextBox.Dispatcher.Invoke(() => ReceiveTextBox.Text += Convert.ToChar(e.ReceivedByte));
+        }
+
+        private void TerminatorChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if((Terminator)TerminatorCombo.SelectedValue == Terminator.Custom)
+            {
+                TerminatorTextBox.IsEnabled = true;
+            }
+            else
+            {
+                TerminatorTextBox.IsEnabled = false;
+            }
+        }
+
+        private async void OnPingButtonClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                PingTextBox.Text += "PING";
+                long elapsedTime = await handler.PingAsync();
+                PingTextBox.Text += " - OK - " + elapsedTime; 
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

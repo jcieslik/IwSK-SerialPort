@@ -12,5 +12,7 @@ namespace RS232_Model.Enums
         LF,
         [Description("CRLF")]
         CRLF,
+        [Description("Własny")]
+        Custom
     }
 }

@@ -1,9 +1,7 @@
 ﻿using RS232_Model.Enums;
 using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO.Ports;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace RS232_Model.Model
@@ -14,7 +12,6 @@ namespace RS232_Model.Model
 
         private SerialPort serialPort;
         private string terminatorString = "";
-        private bool dtrDsrHandshake = false;
         
         public DataBitsNumber DataBitsNumber { get; set; }
         public FlowControlType FlowControlType { get; set; }
@@ -24,6 +21,8 @@ namespace RS232_Model.Model
         public string CustomTerminator { get; set; }
         public string PortName { get; set; }
         public int BaudRate { get; set; }
+
+        public string ReceivedMessage { get; set; }
 
 
         public bool RtsEnable
@@ -62,7 +61,7 @@ namespace RS232_Model.Model
             }
             ConfigureSerialPort();
             serialPort.Open();
-            if (dtrDsrHandshake)
+            if (FlowControlType == FlowControlType.DtrDsr)
             {
                 serialPort.DtrEnable = true;
             }
@@ -76,7 +75,7 @@ namespace RS232_Model.Model
 
         public async Task WriteAsync(string text)
         {
-            if (dtrDsrHandshake)
+            if (FlowControlType == FlowControlType.DtrDsr)
             {
                 while (!serialPort.DsrHolding)
                 {
@@ -92,7 +91,7 @@ namespace RS232_Model.Model
 
         public async void WriteAsync(byte[] bytes)
         {
-            if (dtrDsrHandshake)
+            if (FlowControlType == FlowControlType.DtrDsr)
             {
                 while (!serialPort.DsrHolding)
                 {
@@ -106,18 +105,39 @@ namespace RS232_Model.Model
             }
         }
 
+        public async Task<long> PingAsync(string text = "PING")
+        {
+            Stopwatch stopWatch = new Stopwatch();
+            await TransactionAsync(text);
+            return stopWatch.ElapsedMilliseconds;
+        }
+
+        public async Task<string> TransactionAsync(string text)
+        {
+            await WriteAsync(text);
+
+            // TODO: Sprawic, zeby mozna bylo odczytac tresc ostatniej wiadomosci
+            var transaction = Task.Run(() =>
+            {
+                while (ReceivedMessage != "OK") { }
+            });
+            if (transaction.Wait(serialPort.ReadTimeout))
+            {
+                return ReceivedMessage;
+            }
+            return "";
+        }
+
         private void ConfigureSerialPort()
         {
             serialPort.DataBits = (int)DataBitsNumber;
             if(FlowControlType != FlowControlType.DtrDsr)
             {
                 serialPort.Handshake = (Handshake)FlowControlType;
-                dtrDsrHandshake = false;
             }
             else
             {
                 serialPort.Handshake = Handshake.None;
-                dtrDsrHandshake = true;
             }
             
             serialPort.Parity = (Parity)ParityBitsNumber;
@@ -143,7 +163,8 @@ namespace RS232_Model.Model
                 case Terminator.CRLF:
                     terminatorString = "\r\n";
                     break;
-
+                default:
+                    break;
             }
         }
 
