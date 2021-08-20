@@ -1,18 +1,28 @@
 ﻿using RS232_Model.Enums;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO.Ports;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace RS232_Model.Model
 {
     public class SerialPortHandler
     {
-        public event EventHandler<ByteReceivedEventArgs> ByteRead;
+        //public event EventHandler<ByteReceivedEventArgs> ByteRead;
+        public event EventHandler<TextReceivedEventArgs> TextReceived;
 
-        private SerialPort serialPort;
+        private SerialPort serialPort = new SerialPort();
         private string terminatorString = "";
+        private Queue<byte> lastReceivedBytes = new Queue<byte>();
+        private readonly object writeLock = new object();
+        private bool pingReplyReceived = false;
         
+        //private bool 
+
+        public string PingRequest { get; set; } = "PING";
+        public string PingReply { get; set; } = "OK";
         public DataBitsNumber DataBitsNumber { get; set; }
         public FlowControlType FlowControlType { get; set; }
         public ParityBitsNumber ParityBitsNumber { get; set; }
@@ -21,7 +31,7 @@ namespace RS232_Model.Model
         public string CustomTerminator { get; set; }
         public string PortName { get; set; }
         public int BaudRate { get; set; }
-
+        public int PingTimeout { get; set; } = 10000;
         public string ReceivedMessage { get; set; }
 
 
@@ -48,14 +58,9 @@ namespace RS232_Model.Model
         }
 
 
-        public SerialPortHandler()
-        {
-            serialPort = new SerialPort();
-        }
-
         public void Open()
         {
-            if (serialPort.IsOpen)
+            if (serialPort != null && serialPort.IsOpen)
             {
                 serialPort.Close();
             }
@@ -65,7 +70,15 @@ namespace RS232_Model.Model
             {
                 serialPort.DtrEnable = true;
             }
-            Task.Run(() => Read());
+            if(Terminator == Terminator.None)
+            {
+                lastReceivedBytes.Clear();
+                Task.Run(() => ReadNoTerminator());
+            }
+            else
+            {
+                Task.Run(() => ReadWithTerminator());
+            }
         }
 
         public void Close()
@@ -82,10 +95,14 @@ namespace RS232_Model.Model
                     await Task.Delay(1);
                 }
             }
-            serialPort.Write(text);
-            if (terminatorString.Length > 0)
+            //Lock jest potrzebny, bo odpowiedź na ping jest wysyłana z innego wątku niż normalne wysyłanie.
+            lock (writeLock)
             {
-                serialPort.Write(terminatorString);
+                serialPort.Write(text);
+                if (terminatorString.Length > 0)
+                {
+                    serialPort.Write(terminatorString);
+                }
             }
         }
 
@@ -98,34 +115,36 @@ namespace RS232_Model.Model
                     await Task.Delay(1);
                 }
             }
-            serialPort.Write(bytes, 0, bytes.Length);
-            if (terminatorString.Length > 0)
+            lock (writeLock)
             {
-                serialPort.Write(terminatorString);
+                serialPort.Write(bytes, 0, bytes.Length);
+                if (terminatorString.Length > 0)
+                {
+                    serialPort.Write(terminatorString);
+                }
             }
         }
 
-        public async Task<long> PingAsync(string text = "PING")
+        public async Task<long> PingAsync()
         {
             Stopwatch stopWatch = new Stopwatch();
-            await TransactionAsync(text);
+            stopWatch.Start();
+            Task pingTask = PingTransactionAsync();
+            Task firstTask = await Task.WhenAny(pingTask, Task.Delay(PingTimeout));
+            if(firstTask != pingTask)
+            {
+                throw new Exception("Przekroczono czas oczekiwania na odpowiedź.");
+            }
             return stopWatch.ElapsedMilliseconds;
         }
 
-        public async Task<string> TransactionAsync(string text)
+        public async Task PingTransactionAsync()
         {
-            await WriteAsync(text);
-
-            // TODO: Sprawic, zeby mozna bylo odczytac tresc ostatniej wiadomosci
-            var transaction = Task.Run(() =>
-            {
-                while (ReceivedMessage != "OK") { }
+            pingReplyReceived = false;
+            await WriteAsync(PingRequest);
+            await Task.Run(() => {
+                while(!pingReplyReceived) { }
             });
-            if (transaction.Wait(serialPort.ReadTimeout))
-            {
-                return ReceivedMessage;
-            }
-            return "";
         }
 
         private void ConfigureSerialPort()
@@ -163,24 +182,32 @@ namespace RS232_Model.Model
                 case Terminator.CRLF:
                     terminatorString = "\r\n";
                     break;
+                case Terminator.Custom:
+                    terminatorString = CustomTerminator;
+                    break;
                 default:
                     break;
             }
         }
 
-        private void Read()
+        private void ReadNoTerminator()
         {
-            while (serialPort.IsOpen)
+            while (true)
             {
                 try
                 {
                     int receivedByte = serialPort.ReadByte();
                     HandleReceivedByte(receivedByte);
                 }
+                catch (OperationCanceledException)
+                {
+                    break;//Port został zamknięty
+                }
                 catch (Exception) { 
                 
                 }
             }
+            Debug.WriteLine("ReadNoTerminator return");
 
         }
         
@@ -188,8 +215,95 @@ namespace RS232_Model.Model
         {
             if (receivedByte != -1)
             {
-                ByteReceivedEventArgs eventArgs = new ByteReceivedEventArgs() { ReceivedByte = receivedByte };
-                ByteRead?.Invoke(this, eventArgs);
+                TextReceivedEventArgs eventArgs = new TextReceivedEventArgs();
+                eventArgs.ReceivedText = Encoding.ASCII.GetString(new byte[] { (byte)receivedByte });
+                TextReceived?.Invoke(this, eventArgs);
+                CheckForPingNoTerminator((byte)receivedByte);
+            }
+        }
+
+        private void CheckForPingNoTerminator(byte receivedByte)
+        {
+            lastReceivedBytes.Enqueue(receivedByte);
+            byte[] lastBytesArray = lastReceivedBytes.ToArray();
+            string lastBytesString = Encoding.ASCII.GetString(lastBytesArray);
+            if (lastBytesString.EndsWith(PingRequest))
+            {
+                SendPingReply();
+            }
+            else if (lastBytesString.EndsWith(PingReply))
+            {
+                pingReplyReceived = true;
+            }
+            while(lastReceivedBytes.Count >= Math.Max(PingRequest.Length, PingReply.Length))
+            {
+                lastReceivedBytes.Dequeue();
+            }
+        }
+
+        private void ReadWithTerminator()
+        {
+            while (true)
+            {
+                try
+                {
+                    string receivedText = serialPort.ReadTo(terminatorString);
+                    Debug.WriteLine(receivedText);
+                    HandleReceivedText(receivedText);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;//Port został zamknięty
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e.Message);
+                }
+            }
+            Debug.WriteLine("ReadWithTerminator return");
+        }
+
+        private void HandleReceivedText(string receivedText)
+        {
+            bool isPingRequest = CheckForPingRequestWithTerminator(receivedText);
+            bool isPingReply = CheckForPingReplyWithTerminator(receivedText);
+            if (!isPingRequest && !isPingReply)
+            {
+                TextReceivedEventArgs eventArgs = new TextReceivedEventArgs() { ReceivedText = receivedText };
+                TextReceived?.Invoke(this, eventArgs);
+            }
+        }
+
+        private bool CheckForPingRequestWithTerminator(string receivedText)
+        {
+            if(receivedText == PingRequest)
+            {
+                SendPingReply();
+                return true;
+            }
+            return false;
+        }
+
+        private bool CheckForPingReplyWithTerminator(string receivedText)
+        {
+            if (receivedText == PingReply)
+            {
+                pingReplyReceived = true;
+                return true;
+            }
+            return false;
+        }
+
+        private void SendPingReply()
+        {
+            try
+            {
+                Task writeTask = WriteAsync(PingReply);
+                writeTask.Wait();
+            }
+            catch (Exception)
+            {
+
             }
         }
     }

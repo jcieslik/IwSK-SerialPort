@@ -89,7 +89,8 @@ namespace RS232_UI
             {
                 handler.BaudRate = 150;
             }
-            handler.ByteRead += ReceiveData;
+            handler.TextReceived -= ReceiveData;//Na wypadek, gdyby handler wcześniej był już zarejestrowany
+            handler.TextReceived += ReceiveData;
         }
 
         private async void SendData(object sender, RoutedEventArgs e)
@@ -104,10 +105,15 @@ namespace RS232_UI
                 MessageBox.Show(ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
+        /*
         private void ReceiveData(object sender, ByteReceivedEventArgs e)
         {
             ReceiveTextBox.Dispatcher.Invoke(() => ReceiveTextBox.Text += Convert.ToChar(e.ReceivedByte));
+        }*/
+
+        private void ReceiveData(object sender, TextReceivedEventArgs e)
+        {
+            ReceiveTextBox.Dispatcher.Invoke(() => ReceiveTextBox.Text += e.ReceivedText);
         }
 
         private void TerminatorChanged(object sender, SelectionChangedEventArgs e)
@@ -128,7 +134,7 @@ namespace RS232_UI
             {
                 PingTextBox.Text += "PING";
                 long elapsedTime = await handler.PingAsync();
-                PingTextBox.Text += " - OK - " + elapsedTime + "ms";
+                PingTextBox.Text += " - OK - " + elapsedTime + "ms\n";
             }
             catch (Exception ex)
             {
