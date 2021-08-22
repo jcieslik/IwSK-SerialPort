@@ -12,6 +12,7 @@ namespace RS232_Model.Model
     {
         //public event EventHandler<ByteReceivedEventArgs> ByteRead;
         public event EventHandler<TextReceivedEventArgs> TextReceived;
+        public event EventHandler<bool> ConnectionClosed;
 
         private SerialPort serialPort = new SerialPort();
         private string terminatorString = "";
@@ -55,6 +56,11 @@ namespace RS232_Model.Model
         public bool DsrHolding
         {
             get => serialPort.DsrHolding;
+        }
+
+        public bool IsOpen
+        {
+            get => serialPort.IsOpen;
         }
 
 
@@ -117,10 +123,17 @@ namespace RS232_Model.Model
             }
             lock (writeLock)
             {
-                serialPort.Write(bytes, 0, bytes.Length);
-                if (terminatorString.Length > 0)
+                try
                 {
-                    serialPort.Write(terminatorString);
+                    serialPort.Write(bytes, 0, bytes.Length);
+                    if (terminatorString.Length > 0)
+                    {
+                        serialPort.Write(terminatorString);
+                    }
+                }
+                catch(InvalidOperationException)
+                {
+                    throw new Exception("Port jest zamkniety!");
                 }
             }
         }
@@ -129,22 +142,40 @@ namespace RS232_Model.Model
         {
             Stopwatch stopWatch = new Stopwatch();
             stopWatch.Start();
-            Task pingTask = PingTransactionAsync();
-            Task firstTask = await Task.WhenAny(pingTask, Task.Delay(PingTimeout));
-            if(firstTask != pingTask)
+            try
             {
-                throw new Exception("Przekroczono czas oczekiwania na odpowiedź.");
+                Task pingTask = PingTransactionAsync();
+                Task firstTask = await Task.WhenAny(pingTask, Task.Delay(PingTimeout));
+                if (!pingTask.IsCompletedSuccessfully)
+                {
+                    throw new Exception("Połączenie jest zamknięte!");
+                }
+                if (firstTask != pingTask)
+                {
+                    throw new Exception("Przekroczono czas oczekiwania na odpowiedź.");
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
             }
             return stopWatch.ElapsedMilliseconds;
         }
 
         public async Task PingTransactionAsync()
         {
-            pingReplyReceived = false;
-            await WriteAsync(PingRequest);
-            await Task.Run(() => {
-                while(!pingReplyReceived) { }
-            });
+            try
+            {
+                pingReplyReceived = false;
+                await WriteAsync(PingRequest);
+                await Task.Run(() => {
+                    while (!pingReplyReceived) { }
+                });
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
 
         private void ConfigureSerialPort()
@@ -203,6 +234,11 @@ namespace RS232_Model.Model
                 {
                     break;//Port został zamknięty
                 }
+                catch (InvalidOperationException)
+                {
+                    ConnectionClosed?.Invoke(this, true);
+                    break;
+                }
                 catch (Exception) { 
                 
                 }
@@ -254,6 +290,11 @@ namespace RS232_Model.Model
                 catch (OperationCanceledException)
                 {
                     break;//Port został zamknięty
+                }
+                catch (InvalidOperationException)
+                {
+                    ConnectionClosed?.Invoke(this, true);
+                    break;
                 }
                 catch (Exception e)
                 {

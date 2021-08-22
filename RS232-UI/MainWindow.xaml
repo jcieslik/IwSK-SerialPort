@@ -5,13 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RS232_UI" xmlns:x1="clr-namespace:RS232_Model.Helpers;assembly=RS232-Model"
         mc:Ignorable="d"
-        Title="MainWindow" Height="480" Width="840">
+        Title="MainWindow" Height="560" Width="840">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Window.Resources>
 
     <Grid>
-        <ComboBox x:Name="PortsCombo" HorizontalAlignment="Left" Margin="50,40,0,0" VerticalAlignment="Top" Width="120" ItemsSource="{Binding Ports}" SelectedValue="{Binding Path=SelectedPort}" Height="25" />
+        <ComboBox x:Name="PortsCombo" HorizontalAlignment="Left" Margin="50,40,0,0" VerticalAlignment="Top" Width="120" ItemsSource="{Binding Ports}" SelectedValue="{Binding Path=SelectedPort}" Height="25" DropDownOpened="PortsComboOpen" />
         <ComboBox x:Name="DataBitsCombo" HorizontalAlignment="Left" Margin="50,90,0,0" VerticalAlignment="Top" Width="120" 
                   ItemsSource="{Binding Path=SelectedDataBits, Converter={x1:EnumToCollectionConverter}, Mode=OneTime}" 
                   SelectedValuePath="Value"
@@ -39,11 +39,11 @@
                   SelectedValue="{Binding Path=SelectedFlowControl}" Height="25"/>
         <TextBox x:Name="BaudRateTextBox" HorizontalAlignment="Left" Margin="50,340,0,0" Text="9600&#xD;&#xA;" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="25" FontSize="16" PreviewTextInput="NumberValidationTextBox" TextChanged="BaudRateTextChanged"/>
         <TextBox x:Name="TerminatorTextBox" HorizontalAlignment="Left" Margin="175,240,0,0" TextWrapping="Wrap" MaxLength="2" Height="25" Width="40" VerticalAlignment="Top" FontSize="16" IsEnabled="False"/>
-        <TextBox x:Name="SendTextBox" HorizontalAlignment="Left" Margin="240,50,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="350" Height="140"/>
-        <TextBox x:Name="ReceiveTextBox" HorizontalAlignment="Left" Margin="240,270,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="350" Height="140" IsEnabled="False"/>
-        <Button x:Name="SendButton" Content="Wyślij" HorizontalAlignment="Left" Margin="315,200,0,0" VerticalAlignment="Top" Width="200" Height="30" Click="SendData" FontSize="16"/>
+        <TextBox x:Name="SendTextBox" HorizontalAlignment="Left" Margin="240,50,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="350" Height="180" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+        <TextBox x:Name="ReceiveTextBox" HorizontalAlignment="Left" Margin="240,310,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="350" Height="180" IsReadOnly="True" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+        <Button x:Name="SendButton" Content="Wyślij" HorizontalAlignment="Left" Margin="315,240,0,0" VerticalAlignment="Top" Width="200" Height="30" Click="SendData" FontSize="16"/>
         <TextBlock HorizontalAlignment="Left" Margin="240,20,0,0" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="-0.081,-0.574" Width="99" FontSize="18" Height="30"><Run Language="pl-pl" Text="Wysyłanie"/><LineBreak/><Run Language="pl-pl"/></TextBlock>
-        <TextBlock HorizontalAlignment="Left" Margin="240,240,0,0" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="-0.081,-0.574" Width="99" FontSize="18" Height="26"><Run Text="O"/><Run Language="pl-pl" Text="dbieranie"/><LineBreak/><Run Language="pl-pl"/></TextBlock>
+        <TextBlock HorizontalAlignment="Left" Margin="240,280,0,0" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="-0.081,-0.574" Width="99" FontSize="18" Height="26"><Run Text="O"/><Run Language="pl-pl" Text="dbieranie"/><LineBreak/><Run Language="pl-pl"/></TextBlock>
         <Button Content="Otwórz połączenie" HorizontalAlignment="Left" Margin="50,380,0,0" VerticalAlignment="Top" Width="120" Height="30" FontSize="13" Click="InitializeConnection"/>
         <TextBlock HorizontalAlignment="Left" Margin="50,20,0,0" Text="Port" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="13"/>
         <TextBlock HorizontalAlignment="Left" Margin="50,70,0,0" Text="Bity danych" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="13"/>
@@ -52,7 +52,10 @@
         <TextBlock HorizontalAlignment="Left" Margin="50,220,0,0" Text="Terminator" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="13"/>
         <TextBlock HorizontalAlignment="Left" Margin="50,270,0,0" Text="Kontrola przepływu" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="13"/>
         <TextBlock HorizontalAlignment="Left" Margin="50,320,0,0" Text="Szybkość (bps)" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="13"/>
-        <TextBox x:Name="PingTextBox" HorizontalAlignment="Left" Margin="620,90,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="190" Height="320"/>
+        <TextBox x:Name="PingTextBox" HorizontalAlignment="Left" Margin="620,90,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="190" Height="320" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
         <Button Content="Ping" HorizontalAlignment="Left" Margin="620,50,0,0" VerticalAlignment="Top" Width="190" Height="30" FontSize="17" Click="OnPingButtonClick"/>
+        <Button Content="Zamknij połączenie" HorizontalAlignment="Left" Margin="50,420,0,0" VerticalAlignment="Top" Width="120" Height="30" FontSize="13" Click="CloseConnection"/>
+        <Ellipse x:Name="ConnectionState" HorizontalAlignment="Left" Height="20" Margin="50,465,0,0" Stroke="Black" VerticalAlignment="Top" Width="20" Fill="Red"/>
+        <TextBlock HorizontalAlignment="Left" Margin="75,465,0,0" Text="Stan połączenia" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="14"/>
     </Grid>
 </Window>

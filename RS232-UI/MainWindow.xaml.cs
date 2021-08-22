@@ -31,6 +31,22 @@ namespace RS232_UI
         {
             InitializeComponent();
             DataContext = new ViewModel();
+            AddHandler(Keyboard.PreviewKeyDownEvent, (KeyEventHandler)controlKeyDownEvent);
+        }
+
+        private async void controlKeyDownEvent(object sender, KeyEventArgs e)
+        {
+            if (handler.FlowControlType == FlowControlType.XOnXOff)
+            {
+                if (e.Key == Key.S && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
+                {
+                    await handler.WriteAsync(((char)19).ToString());
+                }
+                else if (e.Key == Key.Q && Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
+                {
+                    await handler.WriteAsync(((char)17).ToString());
+                }
+            }
         }
 
         private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
@@ -59,10 +75,29 @@ namespace RS232_UI
         {
             try
             {
+                handler.Close();
                 ConfigureHandler();
                 handler.Open();
+                BrushConverter bc = new BrushConverter();
+                ConnectionState.Fill = (Brush)bc.ConvertFrom("Green");
+                MessageBox.Show("Poprawnie otwarto port", "Port", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void CloseConnection(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                handler.Close();
+                BrushConverter bc = new BrushConverter();
+                ConnectionState.Fill = (Brush)bc.ConvertFrom("Red");
+                MessageBox.Show("Połączenie zostało zamknięte", "Port", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -89,6 +124,7 @@ namespace RS232_UI
             {
                 handler.BaudRate = 150;
             }
+            handler.ConnectionClosed += ClosedConnection;
             handler.TextReceived -= ReceiveData;//Na wypadek, gdyby handler wcześniej był już zarejestrowany
             handler.TextReceived += ReceiveData;
         }
@@ -113,33 +149,49 @@ namespace RS232_UI
 
         private void ReceiveData(object sender, TextReceivedEventArgs e)
         {
-            ReceiveTextBox.Dispatcher.Invoke(() => ReceiveTextBox.Text += e.ReceivedText);
+            ReceiveTextBox.Dispatcher.Invoke(() => 
+            {
+                ReceiveTextBox.AppendText(e.ReceivedText);
+                PingTextBox.ScrollToEnd();
+            });
+        }
+
+        private void ClosedConnection(object sender, bool e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (e)
+                {
+                    CloseConnection(this, new RoutedEventArgs());
+                    PortsCombo.SelectedItem = "";
+                }
+            });
         }
 
         private void TerminatorChanged(object sender, SelectionChangedEventArgs e)
         {
-            if((Terminator)TerminatorCombo.SelectedValue == Terminator.Custom)
-            {
-                TerminatorTextBox.IsEnabled = true;
-            }
-            else
-            {
-                TerminatorTextBox.IsEnabled = false;
-            }
+            TerminatorTextBox.IsEnabled = (Terminator)TerminatorCombo.SelectedValue == Terminator.Custom;
         }
 
         private async void OnPingButtonClick(object sender, RoutedEventArgs e)
         {
             try
             {
-                PingTextBox.Text += "PING";
+                PingTextBox.AppendText("Ping");
                 long elapsedTime = await handler.PingAsync();
-                PingTextBox.Text += " - OK - " + elapsedTime + "ms\n";
+                PingTextBox.AppendText(" - OK - " + elapsedTime + "ms\n");
+                PingTextBox.ScrollToEnd();
             }
             catch (Exception ex)
             {
+                PingTextBox.AppendText("\n");
                 MessageBox.Show(ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void PortsComboOpen(object sender, EventArgs e)
+        {
+            PortsCombo.ItemsSource = SerialPort.GetPortNames();
         }
     }
 }
