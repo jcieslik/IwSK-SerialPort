@@ -75,7 +75,7 @@ namespace RS232_UI
         {
             try
             {
-                handler.Close();
+                handler.CloseIfOpened();
                 ConfigureHandler();
                 handler.Open();
                 BrushConverter bc = new BrushConverter();
@@ -141,11 +141,6 @@ namespace RS232_UI
                 MessageBox.Show(ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        /*
-        private void ReceiveData(object sender, ByteReceivedEventArgs e)
-        {
-            ReceiveTextBox.Dispatcher.Invoke(() => ReceiveTextBox.Text += Convert.ToChar(e.ReceivedByte));
-        }*/
 
         private void ReceiveData(object sender, TextReceivedEventArgs e)
         {
