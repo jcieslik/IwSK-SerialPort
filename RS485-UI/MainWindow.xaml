@@ -34,7 +34,7 @@
                     <RadioButton Content="Adresowana" HorizontalAlignment="Left" Margin="20,50,0,0" VerticalAlignment="Top" Height="20" Width="110"/>
                     <RadioButton Content="Rozgłoszeniowa" HorizontalAlignment="Left" Margin="150,50,0,0" VerticalAlignment="Top" Height="20" Width="110"/>
                     <Label Content="Adres" HorizontalAlignment="Left" Margin="20,80,0,0" VerticalAlignment="Top" Width="40" Height="25"/>
-                    <TextBox HorizontalAlignment="Left" Margin="20,80,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="240" Height="25"  PreviewTextInput="NumberValidationTextBox" TextChanged="AddressTextChanged"/>
+                    <TextBox HorizontalAlignment="Left" Margin="70,80,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="190" Height="25"  PreviewTextInput="NumberValidationTextBox" TextChanged="AddressTextChanged"/>
                     <Label Content="Rozkaz 1" HorizontalAlignment="Left" Margin="20,110,0,0" VerticalAlignment="Top" Width="60" Height="25"/>
                     <TextBox HorizontalAlignment="Left" Margin="20,140,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="240" Height="70"/>
                     <Button Content="Wykonaj rozkaz 1" HorizontalAlignment="Left" Margin="20,210,0,0" VerticalAlignment="Top" Width="240" Height="25"/>
