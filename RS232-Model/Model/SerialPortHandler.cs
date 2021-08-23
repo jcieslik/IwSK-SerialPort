@@ -66,10 +66,6 @@ namespace RS232_Model.Model
 
         public void Open()
         {
-            if (serialPort != null && serialPort.IsOpen)
-            {
-                serialPort.Close();
-            }
             ConfigureSerialPort();
             serialPort.Open();
             if (FlowControlType == FlowControlType.DtrDsr)
@@ -87,8 +83,18 @@ namespace RS232_Model.Model
             }
         }
 
+        public void CloseIfOpened()
+        {
+            if (serialPort != null && serialPort.IsOpen)
+            {
+                Close();
+            }
+        }
+
         public void Close()
         {
+            serialPort.DiscardOutBuffer();
+            serialPort.DiscardInBuffer();
             serialPort.Close();
         }
 
@@ -101,18 +107,22 @@ namespace RS232_Model.Model
                     await Task.Delay(1);
                 }
             }
-            //Lock jest potrzebny, bo odpowiedź na ping jest wysyłana z innego wątku niż normalne wysyłanie.
-            lock (writeLock)
+
+            try
             {
-                serialPort.Write(text);
-                if (terminatorString.Length > 0)
-                {
-                    serialPort.Write(terminatorString);
-                }
+                await WriteTextAndTerminatorAsync(text);
+            }
+            catch (InvalidOperationException)
+            {
+                throw new Exception("Port jest zamknięty.");
+            }
+            catch (OperationCanceledException)
+            {
+                throw new Exception("Wysyłanie zostało przerwane.");
             }
         }
 
-        public async void WriteAsync(byte[] bytes)
+        public async Task WriteAsync(byte[] bytes)
         {
             if (FlowControlType == FlowControlType.DtrDsr)
             {
@@ -121,9 +131,26 @@ namespace RS232_Model.Model
                     await Task.Delay(1);
                 }
             }
-            lock (writeLock)
+
+            try
             {
-                try
+                await WriteBytesAndTerminatorAsync(bytes);
+            }
+            catch(InvalidOperationException)
+            {
+                throw new Exception("Port jest zamknięty.");
+            }
+            catch (OperationCanceledException)
+            {
+                throw new Exception("Wysyłanie zostało przerwane.");
+            }
+        }
+
+        private async Task WriteBytesAndTerminatorAsync(byte[] bytes)
+        {
+            await Task.Run(() =>
+            {
+                lock (writeLock)
                 {
                     serialPort.Write(bytes, 0, bytes.Length);
                     if (terminatorString.Length > 0)
@@ -131,11 +158,23 @@ namespace RS232_Model.Model
                         serialPort.Write(terminatorString);
                     }
                 }
-                catch(InvalidOperationException)
+            });
+        }
+
+
+        private async Task WriteTextAndTerminatorAsync(string text)
+        {
+            await Task.Run(() =>
+            {
+                lock (writeLock)
                 {
-                    throw new Exception("Port jest zamkniety!");
+                    serialPort.Write(text);
+                    if (terminatorString.Length > 0)
+                    {
+                        serialPort.Write(terminatorString);
+                    }
                 }
-            }
+            });
         }
 
         public async Task<long> PingAsync()
@@ -146,13 +185,13 @@ namespace RS232_Model.Model
             {
                 Task pingTask = PingTransactionAsync();
                 Task firstTask = await Task.WhenAny(pingTask, Task.Delay(PingTimeout));
-                if (!pingTask.IsCompletedSuccessfully)
-                {
-                    throw new Exception("Połączenie jest zamknięte!");
-                }
                 if (firstTask != pingTask)
                 {
                     throw new Exception("Przekroczono czas oczekiwania na odpowiedź.");
+                }
+                else if (!pingTask.IsCompletedSuccessfully)
+                {
+                    throw new Exception("Połączenie jest zamknięte.");
                 }
             }
             catch (Exception e)
@@ -243,7 +282,7 @@ namespace RS232_Model.Model
                 
                 }
             }
-            Debug.WriteLine("ReadNoTerminator return");
+            
 
         }
         
