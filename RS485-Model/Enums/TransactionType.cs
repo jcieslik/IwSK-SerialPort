@@ -2,6 +2,7 @@
 {
     public enum TransactionType
     {
-
+        Addressed = 0,
+        Broadcast = 1
     }
 }
