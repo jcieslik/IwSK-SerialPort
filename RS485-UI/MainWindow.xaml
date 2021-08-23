@@ -27,7 +27,7 @@
                     <Slider Name="retransmissionsSliderValue" HorizontalAlignment="Left" Maximum="5" Minimum="0" TickFrequency="1" Margin="380,230,0,0" VerticalAlignment="Top" Height="20" Width="200"/>
                     <Label Content="0" HorizontalAlignment="Left" Margin="345,225,0,0" VerticalAlignment="Top" Height="25" Width="40"/>
                     <Label Content="5" HorizontalAlignment="Left" Margin="580,225,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
-                    <Button Content="Otwórz połączenie" HorizontalAlignment="Left" Margin="405,286,0,0" VerticalAlignment="Top" Height="40" Width="150"/>
+                    <Button Content="Otwórz połączenie" HorizontalAlignment="Left" Margin="405,280,0,0" VerticalAlignment="Top" Height="40" Width="150"/>
 
                     <Label Content="Typ transakcji" HorizontalAlignment="Left" Margin="20,20,0,0" VerticalAlignment="Top" Width="240"  Height="25"/>
                     <RadioButton Content="Adresowana" HorizontalAlignment="Left" Margin="20,50,0,0" VerticalAlignment="Top" Height="20" Width="110"/>
@@ -45,14 +45,21 @@
             </TabItem>
             <TabItem Header="Slave">
                 <Grid Background="BlanchedAlmond">
-                    <Label Content="Port" HorizontalAlignment="Left" Margin="380,20,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
-                    <ComboBox x:Name="PortsComboSlave" HorizontalAlignment="Left" Margin="380,50,0,0" VerticalAlignment="Top" Width="200" ItemsSource="{Binding Ports}" SelectedValue="{Binding Path=SelectedPort}" Height="25" DropDownOpened="PortsComboOpen" />
-                    <Label Content="Maks. odstęp między znakami [ms]:" HorizontalAlignment="Left" Margin="380,80,0,0" VerticalAlignment="Top" Height="25" Width="200"/>
-                    <Label Content="{Binding ElementName=characterDistanceSlaveSliderValue, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="580,80,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
-                    <Slider Name="characterDistanceSlaveSliderValue" HorizontalAlignment="Left" Maximum="1000" Minimum="0" TickFrequency="10" Margin="380,110,0,0" VerticalAlignment="Top" Height="20" Width="200"/>
-                    <Label Content="0 ms" HorizontalAlignment="Left" Margin="345,105,0,0" VerticalAlignment="Top" Height="25" Width="40"/>
-                    <Label Content="1000 ms" HorizontalAlignment="Left" Margin="580,105,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
-                    <Button Content="Otwórz połączenie" HorizontalAlignment="Left" Margin="405,286,0,0" VerticalAlignment="Top" Height="40" Width="150"/>
+                    <Label Content="Port" HorizontalAlignment="Left" Margin="345,20,0,0" VerticalAlignment="Top" Height="25" Width="60" Grid.Column="1"/>
+                    <ComboBox x:Name="PortsComboSlave" HorizontalAlignment="Left" Margin="345,50,0,0" VerticalAlignment="Top" Width="200" ItemsSource="{Binding Ports}" SelectedValue="{Binding Path=SelectedPort}" Height="25" DropDownOpened="PortsComboOpen" Grid.Column="1" />
+                    <Label Content="Maks. odstęp między znakami [ms]:" HorizontalAlignment="Left" Margin="345,80,0,0" VerticalAlignment="Top" Height="25" Width="200" Grid.Column="1"/>
+                    <Label Content="{Binding ElementName=characterDistanceSlaveSliderValue, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="545,80,0,0" VerticalAlignment="Top" Height="25" Width="60" Grid.Column="1"/>
+                    <Slider Name="characterDistanceSlaveSliderValue" HorizontalAlignment="Left" Maximum="1000" Minimum="0" TickFrequency="10" Margin="345,110,0,0" VerticalAlignment="Top" Height="20" Width="200" Grid.Column="1"/>
+                    <Label Content="0 ms" HorizontalAlignment="Left" Margin="310,105,0,0" VerticalAlignment="Top" Height="25" Width="40" Grid.Column="1"/>
+                    <Label Content="1000 ms" HorizontalAlignment="Left" Margin="545,105,0,0" VerticalAlignment="Top" Height="25" Width="60" Grid.Column="1"/>
+                    <Label Content="Adres" HorizontalAlignment="Left" Margin="345,140,0,0" VerticalAlignment="Top" Width="40" Height="25" Grid.Column="1"/>
+                    <TextBox HorizontalAlignment="Left" Margin="345,170,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Height="25" Grid.Column="1"/>
+                    <Button Content="Otwórz połączenie" HorizontalAlignment="Left" Margin="370,220,0,0" VerticalAlignment="Top" Height="40" Width="150" Grid.Column="1"/>
+
+                    <Label Content="Tekst odebrany (rozkaz 1)" HorizontalAlignment="Left" Margin="20,20,0,0" VerticalAlignment="Top" Width="240" Height="25" Grid.ColumnSpan="2"/>
+                    <TextBox HorizontalAlignment="Left" Margin="20,50,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="240" Height="70" Grid.ColumnSpan="2"/>
+                    <Label Content="Tekst odebrany (rozkaz 2)" HorizontalAlignment="Left" Margin="20,125,0,0" VerticalAlignment="Top" Width="240" Height="25" Grid.ColumnSpan="2"/>
+                    <TextBox HorizontalAlignment="Left" Margin="20,155,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="240" Height="70" Grid.ColumnSpan="2"/>
                 </Grid>
             </TabItem>
         </TabControl>
