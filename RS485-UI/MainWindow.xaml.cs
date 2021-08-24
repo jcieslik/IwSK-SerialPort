@@ -2,6 +2,7 @@
 using RS485_Model.Model;
 using System;
 using System.IO.Ports;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -57,14 +58,15 @@ namespace RS485_UI
             Command2Button.IsEnabled = (TransactionType)TransactionTypeCombo.SelectedValue == TransactionType.Broadcast;
         }
 
-        private async void OpenConnectionSlave(object sender, RoutedEventArgs e)
+        private void OpenConnectionSlave(object sender, RoutedEventArgs e)
         {
             try
             {
-                //await handler.WriteAsync(SendTextBox.Text);
-                //SendTextBox.Text = "";
-                MessageBox.Show("", "Otwarto połączenie Slave", MessageBoxButton.OK, MessageBoxImage.Information);
-
+                SlaveHandler.Address = byte.Parse(SelectedAddressSlave.Text);
+                SlaveHandler.PortName = (string)this.PortsComboSlave.SelectedItem;
+                SlaveHandler.MaxCharInterval = (int)characterDistanceSlaveSliderValue.Value;
+                SlaveHandler.Run();
+                MessageBox.Show("Otwarto połączenie", "Slave", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
@@ -72,14 +74,16 @@ namespace RS485_UI
             }
         }
 
-        private async void OpenConnectionMaster(object sender, RoutedEventArgs e)
+        private void OpenConnectionMaster(object sender, RoutedEventArgs e)
         {
             try
             {
-                //await handler.WriteAsync(SendTextBox.Text);
-                //SendTextBox.Text = "";
-                MessageBox.Show("", "Otwarto połączenie Master", MessageBoxButton.OK, MessageBoxImage.Information);
-
+                MasterHandler.TransactionRetry = (int)retransmissionsSliderValue.Value;
+                MasterHandler.TransactionTimeout = (int)transactionSliderValue.Value;
+                MasterHandler.PortName = (string)this.PortsComboMaster.SelectedItem;
+                MasterHandler.MaxCharInterval = (int)characterDistanceMasterSliderValue.Value;
+                MasterHandler.Open(); 
+                MessageBox.Show("Otwarto połączenie", "Master", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
@@ -90,9 +94,15 @@ namespace RS485_UI
         {
             try
             {
+                var request = new ModbusFrame();
+                request.Address = 0;
+                request.Data = Encoding.ASCII.GetBytes(Command1.Text);
+                request.Function = 1; // ???
+                var response = await MasterHandler.MakeRequest(request);
+
                 //await handler.WriteAsync(SendTextBox.Text);
                 //SendTextBox.Text = "";
-                MessageBox.Show("", "Wykonano rozkaz 1", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Wykonano rozkaz 1", "Master", MessageBoxButton.OK, MessageBoxImage.Information);
 
             }
             catch (Exception ex)
@@ -104,9 +114,14 @@ namespace RS485_UI
         {
             try
             {
+                var request = new ModbusFrame();
+                request.Address = byte.Parse(SelectedAddressMaster.Text);
+                //request.Data = Encoding.ASCII.GetBytes(Command1.Text);
+                request.Function = 2; // ???
+                var response = await MasterHandler.MakeRequest(request);
                 //await handler.WriteAsync(SendTextBox.Text);
                 //SendTextBox.Text = "";
-                MessageBox.Show("", "Wykonano rozkaz 2", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Wykonano rozkaz 2", "Master", MessageBoxButton.OK, MessageBoxImage.Information);
 
             }
             catch (Exception ex)

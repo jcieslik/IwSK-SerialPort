@@ -30,7 +30,7 @@ namespace RS485_Model.Model
         public int TransactionTimeout { get; set; }
         public int TransactionRetry { get; set; }
         public int MaxCharInterval { get; set; }
-        public int WriteTimeout { get; set; }
+        public int WriteTimeout { get; set; } = 500;
 
         public void Open()
         {

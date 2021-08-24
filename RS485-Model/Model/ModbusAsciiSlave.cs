@@ -39,7 +39,7 @@ namespace RS485_Model.Model
 
         public int MaxCharInterval { get; set; }
 
-        public int WriteTimeout { get; set; }
+        public int WriteTimeout { get; set; } = 500;
 
         public ModbusSlaveRequestHandler RequestHandler { get; set; }
 
