@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO.Ports;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace RS485_Model.Model
@@ -29,10 +27,10 @@ namespace RS485_Model.Model
         Stopwatch transactionStopwatch = new Stopwatch();
 
         public string PortName { get; set; }
-        public int TransactionTimeout { get; set; } = 5000;
-        public int TransactionRetry { get; set; } = 0;
-        public int MaxCharInterval { get; set; } = 1000;
-        public int WriteTimeout { get; set; } = 500;
+        public int TransactionTimeout { get; set; }
+        public int TransactionRetry { get; set; }
+        public int MaxCharInterval { get; set; }
+        public int WriteTimeout { get; set; }
 
         public void Open()
         {

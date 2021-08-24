@@ -1,5 +1,4 @@
 ﻿using RS485_Model.Enums;
-using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
@@ -17,6 +16,7 @@ namespace RS485_UI
             Ports = SerialPort.GetPortNames();
             SelectedPortMaster = Ports.FirstOrDefault();
             SelectedPortSlave = Ports.FirstOrDefault();
+            SelectedTransactionType = TransactionType.Addressed;
         }
     }
 }

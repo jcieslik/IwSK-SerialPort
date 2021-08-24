@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO.Ports;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace RS485_Model.Model
@@ -24,7 +22,7 @@ namespace RS485_Model.Model
         private List<byte> receivedBytes = new List<byte>();
 
 
-        private byte address = 1;
+        private byte address;
 
         public string PortName { get; set; }
 
@@ -39,9 +37,9 @@ namespace RS485_Model.Model
             }
         }
 
-        public int MaxCharInterval { get; set; } = 1000;
+        public int MaxCharInterval { get; set; }
 
-        public int WriteTimeout { get; set; } = 500;
+        public int WriteTimeout { get; set; }
 
         public ModbusSlaveRequestHandler RequestHandler { get; set; }
 

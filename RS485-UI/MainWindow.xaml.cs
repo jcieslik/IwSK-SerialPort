@@ -1,20 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using RS485_Model.Enums;
+using RS485_Model.Model;
+using System;
 using System.IO.Ports;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 namespace RS485_UI
 {
     /// <summary>
@@ -22,6 +13,10 @@ namespace RS485_UI
     /// </summary>
     public partial class MainWindow : Window
     {
+        ModbusAsciiMaster MasterHandler = new ModbusAsciiMaster();
+
+        ModbusAsciiSlave SlaveHandler = new ModbusAsciiSlave();
+
         public MainWindow()
         {        
             InitializeComponent();
@@ -54,5 +49,71 @@ namespace RS485_UI
                 textbox.Text = "1";
             }
         }
+
+        private void TransactionTypeChanged(object sender, SelectionChangedEventArgs e)
+        {
+            SelectedAddressMaster.IsEnabled = (TransactionType)TransactionTypeCombo.SelectedValue == TransactionType.Addressed;
+            Command2.IsEnabled = (TransactionType)TransactionTypeCombo.SelectedValue == TransactionType.Broadcast;
+            Command2Button.IsEnabled = (TransactionType)TransactionTypeCombo.SelectedValue == TransactionType.Broadcast;
+        }
+
+        private async void OpenConnectionSlave(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                //await handler.WriteAsync(SendTextBox.Text);
+                //SendTextBox.Text = "";
+                MessageBox.Show("", "Otwarto połączenie Slave", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async void OpenConnectionMaster(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                //await handler.WriteAsync(SendTextBox.Text);
+                //SendTextBox.Text = "";
+                MessageBox.Show("", "Otwarto połączenie Master", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        private async void ExecuteCommand1(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                //await handler.WriteAsync(SendTextBox.Text);
+                //SendTextBox.Text = "";
+                MessageBox.Show("", "Wykonano rozkaz 1", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        private async void ExecuteCommand2(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                //await handler.WriteAsync(SendTextBox.Text);
+                //SendTextBox.Text = "";
+                MessageBox.Show("", "Wykonano rozkaz 2", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
     }
 }

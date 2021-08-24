@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:RS485_UI"
+        xmlns:local="clr-namespace:RS485_UI" 
+        xmlns:x1="clr-namespace:RS485_Model.Helpers;assembly=RS485-Model"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="650">
     <Grid>
@@ -28,19 +29,21 @@
                     <Slider Name="retransmissionsSliderValue" HorizontalAlignment="Left" Maximum="5" Minimum="0" TickFrequency="1" IsSnapToTickEnabled="True"  Margin="310,230,0,0" VerticalAlignment="Top" Height="20" Width="200"/>
                     <Label Content="0" HorizontalAlignment="Left" Margin="275,225,0,0" VerticalAlignment="Top" Height="25" Width="40"/>
                     <Label Content="5" HorizontalAlignment="Left" Margin="510,225,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
-                    <Button Content="Otwórz połączenie" HorizontalAlignment="Left" Margin="335,280,0,0" VerticalAlignment="Top" Height="40" Width="150"/>
+                    <Button Content="Otwórz połączenie" Name="OpenConnectionButtonMaster" Click="OpenConnectionMaster"  HorizontalAlignment="Left" Margin="335,280,0,0" VerticalAlignment="Top" Height="40" Width="150"/>
 
                     <Label Content="Typ transakcji" HorizontalAlignment="Left" Margin="20,20,0,0" VerticalAlignment="Top" Width="240"  Height="25"/>
-                    <RadioButton Content="Adresowana" HorizontalAlignment="Left" Margin="20,50,0,0" VerticalAlignment="Top" Height="20" Width="110"/>
-                    <RadioButton Content="Rozgłoszeniowa" HorizontalAlignment="Left" Margin="150,50,0,0" VerticalAlignment="Top" Height="20" Width="110"/>
-                    <Label Content="Adres" HorizontalAlignment="Left" Margin="20,80,0,0" VerticalAlignment="Top" Width="40" Height="25"/>
-                    <TextBox HorizontalAlignment="Left" Margin="70,80,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="190" Height="25"  PreviewTextInput="NumberValidationTextBox" TextChanged="AddressTextChanged"/>
+                    <ComboBox x:Name="TransactionTypeCombo" HorizontalAlignment="Left" Margin="20,50,0,0" VerticalAlignment="Top" Width="240"
+                        ItemsSource="{Binding Path=SelectedTransactionType, Converter={x1:EnumToCollectionConverter}, Mode=OneTime}" 
+                        SelectedValuePath="Value" DisplayMemberPath="Description"
+                        SelectedValue="{Binding Path=SelectedTransactionType}" SelectionChanged="TransactionTypeChanged"/>
+                     <Label Content="Adres" HorizontalAlignment="Left" Margin="20,85,0,0" VerticalAlignment="Top" Width="40" Height="25"/>
+                    <TextBox Name="SelectedAddressMaster" HorizontalAlignment="Left" Margin="70,85,0,0" Text="123" TextWrapping="Wrap" VerticalAlignment="Top" Width="190" Height="25"  PreviewTextInput="NumberValidationTextBox" TextChanged="AddressTextChanged"/>
                     <Label Content="Rozkaz 1" HorizontalAlignment="Left" Margin="20,110,0,0" VerticalAlignment="Top" Width="60" Height="25"/>
-                    <TextBox HorizontalAlignment="Left" Margin="20,140,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="240" Height="70"/>
-                    <Button Content="Wykonaj rozkaz 1" HorizontalAlignment="Left" Margin="20,210,0,0" VerticalAlignment="Top" Width="240" Height="25"/>
+                    <TextBox Name="Command1" HorizontalAlignment="Left" Margin="20,140,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="240" Height="70"/>
+                    <Button Content="Wykonaj rozkaz 1" Click="ExecuteCommand1" HorizontalAlignment="Left" Margin="20,210,0,0" VerticalAlignment="Top" Width="240" Height="25"/>
                     <Label Content="Rozkaz 2" HorizontalAlignment="Left" Margin="20,240,0,0" VerticalAlignment="Top" Width="60" Height="25"/>
-                    <TextBox HorizontalAlignment="Left" Margin="20,270,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="240" Height="70"/>
-                    <Button Content="Wykonaj rozkaz 2" HorizontalAlignment="Left" Margin="20,340,0,0" VerticalAlignment="Top" Width="240" Height="25"/>
+                    <TextBox Name="Command2" HorizontalAlignment="Left" Margin="20,270,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="240" Height="70" IsReadOnly="True"/>
+                    <Button Name="Command2Button" Click="ExecuteCommand2" Content="Wykonaj rozkaz 2" HorizontalAlignment="Left" Margin="20,340,0,0" VerticalAlignment="Top" Width="240" Height="25"/>
 
                 </Grid>
             </TabItem>
@@ -54,13 +57,13 @@
                     <Label Content="0 ms" HorizontalAlignment="Left" Margin="310,105,0,0" VerticalAlignment="Top" Height="25" Width="40"/>
                     <Label Content="1000 ms" HorizontalAlignment="Left" Margin="545,105,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
                     <Label Content="Adres" HorizontalAlignment="Left" Margin="345,140,0,0" VerticalAlignment="Top" Width="40" Height="25"/>
-                    <TextBox HorizontalAlignment="Left" Margin="345,170,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Height="25" PreviewTextInput="NumberValidationTextBox" TextChanged="AddressTextChanged"/>
-                    <Button Content="Otwórz połączenie" HorizontalAlignment="Left" Margin="370,220,0,0" VerticalAlignment="Top" Height="40" Width="150"/>
+                    <TextBox Name="SelectedAddressSlave" HorizontalAlignment="Left" Margin="345,170,0,0" Text="123" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Height="25" PreviewTextInput="NumberValidationTextBox" TextChanged="AddressTextChanged"/>
+                    <Button Content="Otwórz połączenie" Name="OpenConnectionButtonSlave" Click="OpenConnectionSlave" HorizontalAlignment="Left" Margin="370,220,0,0" VerticalAlignment="Top" Height="40" Width="150"/>
 
                     <Label Content="Tekst odebrany (rozkaz 1)" HorizontalAlignment="Left" Margin="20,20,0,0" VerticalAlignment="Top" Width="240" Height="25"/>
-                    <TextBox HorizontalAlignment="Left" Margin="20,50,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="240" Height="70"/>
-                    <Label Content="Tekst odebrany (rozkaz 2)" HorizontalAlignment="Left" Margin="20,125,0,0" VerticalAlignment="Top" Width="240" Height="25"/>
-                    <TextBox HorizontalAlignment="Left" Margin="20,155,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="240" Height="70"/>
+                    <TextBox Name="Command1Slave" HorizontalAlignment="Left" Margin="20,50,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="240" Height="70" IsReadOnly="True"/>
+                    <Label Content="Tekst odpowiedzi (rozkaz 2)" HorizontalAlignment="Left" Margin="20,125,0,0" VerticalAlignment="Top" Width="240" Height="25"/>
+                    <TextBox Name="Command2Slave" HorizontalAlignment="Left" Margin="20,155,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="240" Height="70"/>
                 </Grid>
             </TabItem>
         </TabControl>
