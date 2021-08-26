@@ -18,10 +18,13 @@ namespace RS485_UI
 
         ModbusAsciiSlave SlaveHandler = new ModbusAsciiSlave();
 
+        ModbusSlaveRequestHandler SlaveRequestHandler = new ModbusSlaveRequestHandler();
+
         public MainWindow()
         {        
             InitializeComponent();
             DataContext = new ViewModel();
+            SlaveRequestHandler.MessageReceived += SlaveMessageReceived;
         }
         private void PortsComboOpen(object sender, EventArgs e)
         {
@@ -54,8 +57,8 @@ namespace RS485_UI
         private void TransactionTypeChanged(object sender, SelectionChangedEventArgs e)
         {
             SelectedAddressMaster.IsEnabled = (TransactionType)TransactionTypeCombo.SelectedValue == TransactionType.Addressed;
-            Command2.IsEnabled = (TransactionType)TransactionTypeCombo.SelectedValue == TransactionType.Broadcast;
-            Command2Button.IsEnabled = (TransactionType)TransactionTypeCombo.SelectedValue == TransactionType.Broadcast;
+            Command2.IsEnabled = (TransactionType)TransactionTypeCombo.SelectedValue == TransactionType.Addressed;
+            Command2Button.IsEnabled = (TransactionType)TransactionTypeCombo.SelectedValue == TransactionType.Addressed;
         }
 
         private void OpenConnectionSlave(object sender, RoutedEventArgs e)
@@ -65,6 +68,7 @@ namespace RS485_UI
                 SlaveHandler.Address = byte.Parse(SelectedAddressSlave.Text);
                 SlaveHandler.PortName = (string)this.PortsComboSlave.SelectedItem;
                 SlaveHandler.MaxCharInterval = (int)characterDistanceSlaveSliderValue.Value;
+                SlaveHandler.RequestHandler = SlaveRequestHandler;
                 SlaveHandler.Run();
                 MessageBox.Show("Otwarto połączenie", "Slave", MessageBoxButton.OK, MessageBoxImage.Information);
             }
@@ -90,19 +94,32 @@ namespace RS485_UI
                 MessageBox.Show(ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+        private byte GetCommandAddress()
+        {
+            if((TransactionType)TransactionTypeCombo.SelectedValue == TransactionType.Addressed)
+            {
+                return Byte.Parse(SelectedAddressMaster.Text);
+            }
+            else
+            {
+                return 0;
+            }
+        }
         private async void ExecuteCommand1(object sender, RoutedEventArgs e)
         {
             try
             {
                 var request = new ModbusFrame();
-                request.Address = 0;
+                request.Address = GetCommandAddress();
                 request.Data = Encoding.ASCII.GetBytes(Command1.Text);
-                request.Function = 1; // ???
+                request.Function = 1;
                 var response = await MasterHandler.MakeRequest(request);
 
                 //await handler.WriteAsync(SendTextBox.Text);
                 //SendTextBox.Text = "";
                 MessageBox.Show("Wykonano rozkaz 1", "Master", MessageBoxButton.OK, MessageBoxImage.Information);
+                Command1.Text = "";
 
             }
             catch (Exception ex)
@@ -115,10 +132,14 @@ namespace RS485_UI
             try
             {
                 var request = new ModbusFrame();
-                request.Address = byte.Parse(SelectedAddressMaster.Text);
-                //request.Data = Encoding.ASCII.GetBytes(Command1.Text);
-                request.Function = 2; // ???
+                request.Address = GetCommandAddress();
+                request.Data = Array.Empty<byte>();
+                request.Function = 2;
                 var response = await MasterHandler.MakeRequest(request);
+                if(response != null)
+                {
+                    Command2.Text = Encoding.ASCII.GetString(response.Data);
+                }
                 //await handler.WriteAsync(SendTextBox.Text);
                 //SendTextBox.Text = "";
                 MessageBox.Show("Wykonano rozkaz 2", "Master", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -128,6 +149,19 @@ namespace RS485_UI
             {
                 MessageBox.Show(ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void SlaveMessageReceived(object sender, string message)
+        {
+            Dispatcher.Invoke(() => {
+                Command1Slave.Text = message;
+            });
+        }
+
+        private void SlaveResponseTextChanged(object sender, TextChangedEventArgs e)
+        {
+            var textBox = sender as TextBox;
+            SlaveRequestHandler.MessageToSend = textBox.Text;
         }
 
     }

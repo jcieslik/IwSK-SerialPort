@@ -1,15 +1,18 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 
 namespace RS485_Model.Model
 {
     public class ModbusSlaveRequestHandler
     {
+        public event EventHandler<string> MessageReceived;
+
         private const byte illegalFunctionCode = 1;
         private const byte exceptionResponseOffset = 128;
 
         public string MessageToSend { get; set; } = "";
 
-        public string MessageReceived { get; private set; } = "";
+        public string LastReceivedMessage { get; private set; } = "";
 
         public ModbusFrame Handle(ModbusFrame requestFrame)
         {
@@ -29,7 +32,8 @@ namespace RS485_Model.Model
 
         private ModbusFrame HandleFunctionWrite(ModbusFrame requestFrame)
         {
-            MessageReceived = Encoding.ASCII.GetString(requestFrame.Data);
+            LastReceivedMessage = Encoding.ASCII.GetString(requestFrame.Data);
+            MessageReceived?.Invoke(this, LastReceivedMessage);
             if (requestFrame.Address == 0)
                 return null;
             else
