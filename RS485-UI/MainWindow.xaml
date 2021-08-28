@@ -16,12 +16,12 @@
                     <ComboBox x:Name="PortsComboMaster" HorizontalAlignment="Left" Margin="350,50,0,0" VerticalAlignment="Top" Width="200" ItemsSource="{Binding Ports}" SelectedValue="{Binding Path=SelectedPortMaster}" Height="25" DropDownOpened="PortsComboOpen"/>
                     <Label Content="Timeout transakcji [ms]:" HorizontalAlignment="Left" Margin="350,80,0,0" VerticalAlignment="Top" Height="25" Width="135"/>
                     <Label Content="{Binding ElementName=transactionSliderValue, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="490,80,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
-                    <Slider Name="transactionSliderValue" HorizontalAlignment="Left" Maximum="10000" Minimum="0" TickFrequency="100" IsSnapToTickEnabled="True" Margin="350,110,0,0" VerticalAlignment="Top" Height="20" Width="200"/>
+                    <Slider Name="transactionSliderValue" HorizontalAlignment="Left" Maximum="10000" Minimum="0" TickFrequency="100" IsSnapToTickEnabled="True" Margin="350,110,0,0" VerticalAlignment="Top" Height="20" Width="200" Value="5000"/>
                     <Label Content="0 ms" HorizontalAlignment="Left" Margin="315,105,0,0" VerticalAlignment="Top" Height="25" Width="40"/>
                     <Label Content="10000 ms" HorizontalAlignment="Left" Margin="550,105,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
                     <Label Content="Maks. odstęp między znakami [ms]:" HorizontalAlignment="Left" Margin="350,140,0,0" VerticalAlignment="Top" Height="25" Width="200"/>
                     <Label Content="{Binding ElementName=characterDistanceMasterSliderValue, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="550,140,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
-                    <Slider Name="characterDistanceMasterSliderValue" HorizontalAlignment="Left" Maximum="1000" Minimum="0" TickFrequency="10" IsSnapToTickEnabled="True" Margin="350,170,0,0" VerticalAlignment="Top" Height="20" Width="200"/>
+                    <Slider Name="characterDistanceMasterSliderValue" HorizontalAlignment="Left" Maximum="1000" Minimum="0" TickFrequency="10" IsSnapToTickEnabled="True" Margin="350,170,0,0" VerticalAlignment="Top" Height="20" Width="200" Value="500"/>
                     <Label Content="0 ms" HorizontalAlignment="Left" Margin="315,165,0,0" VerticalAlignment="Top" Height="25" Width="40"/>
                     <Label Content="1000 ms" HorizontalAlignment="Left" Margin="550,165,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
                     <Label Content="Liczba retransmisji:" HorizontalAlignment="Left" Margin="350,200,0,0" VerticalAlignment="Top" Height="25" Width="110"/>
@@ -58,7 +58,7 @@
                     <ComboBox x:Name="PortsComboSlave" HorizontalAlignment="Left" Margin="350,50,0,0" VerticalAlignment="Top" Width="200" ItemsSource="{Binding Ports}" SelectedValue="{Binding Path=SelectedPortSlave}" Height="25" DropDownOpened="PortsComboOpen"/>
                     <Label Content="Maks. odstęp między znakami [ms]:" HorizontalAlignment="Left" Margin="345,80,0,0" VerticalAlignment="Top" Height="25" Width="200"/>
                     <Label Content="{Binding ElementName=characterDistanceSlaveSliderValue, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="545,80,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
-                    <Slider Name="characterDistanceSlaveSliderValue" HorizontalAlignment="Left" Maximum="1000" Minimum="0" TickFrequency="10" IsSnapToTickEnabled="True" Margin="350,110,0,0" VerticalAlignment="Top" Height="20" Width="200"/>
+                    <Slider Name="characterDistanceSlaveSliderValue" HorizontalAlignment="Left" Maximum="1000" Minimum="0" TickFrequency="10" IsSnapToTickEnabled="True" Margin="350,110,0,0" VerticalAlignment="Top" Height="20" Width="200" Value="500"/>
                     <Label Content="0 ms" HorizontalAlignment="Left" Margin="310,105,0,0" VerticalAlignment="Top" Height="25" Width="40"/>
                     <Label Content="1000 ms" HorizontalAlignment="Left" Margin="550,105,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
                     <Label Content="Adres" HorizontalAlignment="Left" Margin="350,140,0,0" VerticalAlignment="Top" Width="40" Height="25"/>

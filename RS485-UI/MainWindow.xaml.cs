@@ -94,7 +94,7 @@ namespace RS485_UI
         {
             SlaveSendingTextBox.Dispatcher.Invoke(() =>
             {
-                SlaveSendingTextBox.AppendText("Odebrane: " + string.Format("{0,10:X}", e.FrameBytes) + "\n");
+                SlaveSendingTextBox.AppendText("Odebrane: " + BitConverter.ToString(e.FrameBytes) + "\n");
             });
         }
 
@@ -102,7 +102,7 @@ namespace RS485_UI
         {
             SlaveSendingTextBox.Dispatcher.Invoke(() =>
             {
-                SlaveSendingTextBox.AppendText("Przesłane: " + string.Format("{0,10:X}", e.FrameBytes) + "\n");
+                SlaveSendingTextBox.AppendText("Przesłane: " + BitConverter.ToString(e.FrameBytes) + "\n");
             });
         }
 
