@@ -114,6 +114,7 @@ namespace RS232_UI
             {
                 handler.BaudRate = 150;
             }
+            handler.ConnectionClosed -= ClosedConnection;
             handler.ConnectionClosed += ClosedConnection;
             handler.TextReceived -= ReceiveData;//Na wypadek, gdyby handler wcześniej był już zarejestrowany
             handler.TextReceived += ReceiveData;

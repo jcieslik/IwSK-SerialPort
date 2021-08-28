@@ -16,6 +16,7 @@ namespace RS485_Model.Model
     {
         public event EventHandler<ModbusFrameEventArgs> FrameReceived;
         public event EventHandler<ModbusFrameEventArgs> FrameSent;
+        public event EventHandler<bool> SlaveClosed;
 
         private AsciiSlaveState state = AsciiSlaveState.Idle;
         private SerialPort serialPort = new SerialPort();
@@ -61,6 +62,23 @@ namespace RS485_Model.Model
             Task.Run(() => Read());
         }
 
+        public bool CloseIfOpened()
+        {
+            if (serialPort != null && serialPort.IsOpen)
+            {
+                Close();
+                return true;
+            }
+            return false;
+        }
+
+        public void Close()
+        {
+            serialPort.DiscardOutBuffer();
+            serialPort.DiscardInBuffer();
+            serialPort.Close();
+        }
+
         private void Read()
         {
             while (serialPort.IsOpen)
@@ -74,6 +92,10 @@ namespace RS485_Model.Model
                 catch (TimeoutException)
                 {
                     HandleTimeout();
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    SlaveClosed?.Invoke(this, true);
                 }
                 catch (Exception)
                 {

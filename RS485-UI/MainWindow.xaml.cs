@@ -7,6 +7,8 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+
 namespace RS485_UI
 {
     /// <summary>
@@ -21,7 +23,7 @@ namespace RS485_UI
         ModbusSlaveRequestHandler SlaveRequestHandler = new ModbusSlaveRequestHandler();
 
         public MainWindow()
-        {        
+        {
             InitializeComponent();
             DataContext = new ViewModel();
             SlaveRequestHandler.MessageReceived += SlaveMessageReceived;
@@ -65,11 +67,21 @@ namespace RS485_UI
         {
             try
             {
+                CloseConnectionMaster(this, new RoutedEventArgs());
+                SlaveHandler.CloseIfOpened();
                 SlaveHandler.Address = byte.Parse(SelectedAddressSlave.Text);
-                SlaveHandler.PortName = (string)this.PortsComboSlave.SelectedItem;
+                SlaveHandler.PortName = (string)PortsComboSlave.SelectedItem;
                 SlaveHandler.MaxCharInterval = (int)characterDistanceSlaveSliderValue.Value;
                 SlaveHandler.RequestHandler = SlaveRequestHandler;
                 SlaveHandler.Run();
+                BrushConverter bc = new BrushConverter();
+                ConnectionStateSlave.Fill = (Brush)bc.ConvertFrom("Green");
+                SlaveHandler.SlaveClosed -= SlaveClosed;
+                SlaveHandler.SlaveClosed += SlaveClosed;
+                SlaveHandler.FrameSent -= SlaveSentData;
+                SlaveHandler.FrameReceived -= SlaveSentData;
+                SlaveHandler.FrameSent += SlaveSentData;
+                SlaveHandler.FrameReceived += SlaveReceivedData;
                 MessageBox.Show("Otwarto połączenie", "Slave", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
@@ -78,15 +90,39 @@ namespace RS485_UI
             }
         }
 
+        private void SlaveSentData(object sender, ModbusFrameEventArgs e)
+        {
+            SlaveSendingTextBox.Dispatcher.Invoke(() =>
+            {
+                SlaveSendingTextBox.AppendText("Odebrane: " + string.Format("{0,10:X}", e.FrameBytes) + "\n");
+            });
+        }
+
+        private void SlaveReceivedData(object sender, ModbusFrameEventArgs e)
+        {
+            SlaveSendingTextBox.Dispatcher.Invoke(() =>
+            {
+                SlaveSendingTextBox.AppendText("Przesłane: " + string.Format("{0,10:X}", e.FrameBytes) + "\n");
+            });
+        }
+
         private void OpenConnectionMaster(object sender, RoutedEventArgs e)
         {
             try
             {
+                CloseConnectionSlave(this, new RoutedEventArgs());
+                MasterHandler.CloseIfOpened();
                 MasterHandler.TransactionRetry = (int)retransmissionsSliderValue.Value;
                 MasterHandler.TransactionTimeout = (int)transactionSliderValue.Value;
-                MasterHandler.PortName = (string)this.PortsComboMaster.SelectedItem;
+                MasterHandler.PortName = (string)PortsComboMaster.SelectedItem;
                 MasterHandler.MaxCharInterval = (int)characterDistanceMasterSliderValue.Value;
-                MasterHandler.Open(); 
+                MasterHandler.Open();
+                BrushConverter bc = new BrushConverter();
+                ConnectionStateMaster.Fill = (Brush)bc.ConvertFrom("Green");
+                MasterHandler.FrameReceived -= MasterReceivedData;
+                MasterHandler.FrameSent -= MasterSentData;
+                MasterHandler.FrameReceived += MasterReceivedData;
+                MasterHandler.FrameSent += MasterSentData;
                 MessageBox.Show("Otwarto połączenie", "Master", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
@@ -95,17 +131,34 @@ namespace RS485_UI
             }
         }
 
+        private void MasterReceivedData(object sender, ModbusFrameEventArgs e)
+        {
+            MasterSendingTextBox.Dispatcher.Invoke(() =>
+            {
+                MasterSendingTextBox.AppendText("Odebrane: " + BitConverter.ToString(e.FrameBytes) + "\n");
+            });
+        }
+
+        private void MasterSentData(object sender, ModbusFrameEventArgs e)
+        {
+            MasterSendingTextBox.Dispatcher.Invoke(() =>
+            {
+                MasterSendingTextBox.AppendText("Przesłane: " + BitConverter.ToString(e.FrameBytes) + "\n");
+            });
+        }
+
         private byte GetCommandAddress()
         {
             if((TransactionType)TransactionTypeCombo.SelectedValue == TransactionType.Addressed)
             {
-                return Byte.Parse(SelectedAddressMaster.Text);
+                return byte.Parse(SelectedAddressMaster.Text);
             }
             else
             {
                 return 0;
             }
         }
+
         private async void ExecuteCommand1(object sender, RoutedEventArgs e)
         {
             try
@@ -116,11 +169,13 @@ namespace RS485_UI
                 request.Function = 1;
                 var response = await MasterHandler.MakeRequest(request);
 
-                //await handler.WriteAsync(SendTextBox.Text);
-                //SendTextBox.Text = "";
                 MessageBox.Show("Wykonano rozkaz 1", "Master", MessageBoxButton.OK, MessageBoxImage.Information);
                 Command1.Text = "";
 
+            }
+            catch (InvalidOperationException ex)
+            {
+                CloseConnectionMaster(this, new RoutedEventArgs());
             }
             catch (Exception ex)
             {
@@ -140,8 +195,7 @@ namespace RS485_UI
                 {
                     Command2.Text = Encoding.ASCII.GetString(response.Data);
                 }
-                //await handler.WriteAsync(SendTextBox.Text);
-                //SendTextBox.Text = "";
+
                 MessageBox.Show("Wykonano rozkaz 2", "Master", MessageBoxButton.OK, MessageBoxImage.Information);
 
             }
@@ -164,5 +218,52 @@ namespace RS485_UI
             SlaveRequestHandler.MessageToSend = textBox.Text;
         }
 
+        private void CloseConnectionMaster(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                bool result = MasterHandler.CloseIfOpened();
+                BrushConverter bc = new BrushConverter();
+                ConnectionStateMaster.Fill = (Brush)bc.ConvertFrom("Red");
+                if(result)
+                {
+                    MessageBox.Show("Połączenie zostało zamknięte", "Master", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void CloseConnectionSlave(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                bool result = MasterHandler.CloseIfOpened();
+                BrushConverter bc = new BrushConverter();
+                ConnectionStateSlave.Fill = (Brush)bc.ConvertFrom("Red");
+                if (result)
+                {
+                    MessageBox.Show("Połączenie zostało zamknięte", "Slave", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void SlaveClosed(object sender, bool e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (e)
+                {
+                    CloseConnectionSlave(this, new RoutedEventArgs());
+                    PortsComboSlave.SelectedItem = "";
+                }
+            });
+        }
     }
 }

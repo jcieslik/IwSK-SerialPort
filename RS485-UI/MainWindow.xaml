@@ -6,30 +6,31 @@
         xmlns:local="clr-namespace:RS485_UI" 
         xmlns:x1="clr-namespace:RS485_Model.Helpers;assembly=RS485-Model"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="650">
+        Title="MainWindow" Height="480" Width="900">
     <Grid>
         <TabControl>
             <TabItem Header="Master">
                 <Grid Background="AliceBlue">
 
-                    <Label Content="Port" HorizontalAlignment="Left" Margin="310,20,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
-                    <ComboBox x:Name="PortsComboMaster" HorizontalAlignment="Left" Margin="310,50,0,0" VerticalAlignment="Top" Width="200" ItemsSource="{Binding Ports}" SelectedValue="{Binding Path=SelectedPortMaster}" Height="25" DropDownOpened="PortsComboOpen"/>
-                    <Label Content="Timeout transakcji [ms]:" HorizontalAlignment="Left" Margin="310,80,0,0" VerticalAlignment="Top" Height="25" Width="135"/>
-                    <Label Content="{Binding ElementName=transactionSliderValue, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="450,80,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
-                    <Slider Name="transactionSliderValue" HorizontalAlignment="Left" Maximum="10000" Minimum="0" TickFrequency="100" IsSnapToTickEnabled="True" Margin="310,110,0,0" VerticalAlignment="Top" Height="20" Width="200"/>
-                    <Label Content="0 ms" HorizontalAlignment="Left" Margin="275,105,0,0" VerticalAlignment="Top" Height="25" Width="40"/>
-                    <Label Content="10000 ms" HorizontalAlignment="Left" Margin="510,105,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
-                    <Label Content="Maks. odstęp między znakami [ms]:" HorizontalAlignment="Left" Margin="310,140,0,0" VerticalAlignment="Top" Height="25" Width="200"/>
-                    <Label Content="{Binding ElementName=characterDistanceMasterSliderValue, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="510,140,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
-                    <Slider Name="characterDistanceMasterSliderValue" HorizontalAlignment="Left" Maximum="1000" Minimum="0" TickFrequency="10" IsSnapToTickEnabled="True" Margin="310,170,0,0" VerticalAlignment="Top" Height="20" Width="200"/>
-                    <Label Content="0 ms" HorizontalAlignment="Left" Margin="275,165,0,0" VerticalAlignment="Top" Height="25" Width="40"/>
-                    <Label Content="1000 ms" HorizontalAlignment="Left" Margin="510,165,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
-                    <Label Content="Liczba retransmisji:" HorizontalAlignment="Left" Margin="310,200,0,0" VerticalAlignment="Top" Height="25" Width="110"/>
-                    <Label Content="{Binding ElementName=retransmissionsSliderValue, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="420,200,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
-                    <Slider Name="retransmissionsSliderValue" HorizontalAlignment="Left" Maximum="5" Minimum="0" TickFrequency="1" IsSnapToTickEnabled="True"  Margin="310,230,0,0" VerticalAlignment="Top" Height="20" Width="200"/>
-                    <Label Content="0" HorizontalAlignment="Left" Margin="275,225,0,0" VerticalAlignment="Top" Height="25" Width="40"/>
-                    <Label Content="5" HorizontalAlignment="Left" Margin="510,225,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
-                    <Button Content="Otwórz połączenie" Name="OpenConnectionButtonMaster" Click="OpenConnectionMaster"  HorizontalAlignment="Left" Margin="335,280,0,0" VerticalAlignment="Top" Height="40" Width="150"/>
+                    <Label Content="Port" HorizontalAlignment="Left" Margin="350,20,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
+                    <ComboBox x:Name="PortsComboMaster" HorizontalAlignment="Left" Margin="350,50,0,0" VerticalAlignment="Top" Width="200" ItemsSource="{Binding Ports}" SelectedValue="{Binding Path=SelectedPortMaster}" Height="25" DropDownOpened="PortsComboOpen"/>
+                    <Label Content="Timeout transakcji [ms]:" HorizontalAlignment="Left" Margin="350,80,0,0" VerticalAlignment="Top" Height="25" Width="135"/>
+                    <Label Content="{Binding ElementName=transactionSliderValue, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="490,80,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
+                    <Slider Name="transactionSliderValue" HorizontalAlignment="Left" Maximum="10000" Minimum="0" TickFrequency="100" IsSnapToTickEnabled="True" Margin="350,110,0,0" VerticalAlignment="Top" Height="20" Width="200"/>
+                    <Label Content="0 ms" HorizontalAlignment="Left" Margin="315,105,0,0" VerticalAlignment="Top" Height="25" Width="40"/>
+                    <Label Content="10000 ms" HorizontalAlignment="Left" Margin="550,105,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
+                    <Label Content="Maks. odstęp między znakami [ms]:" HorizontalAlignment="Left" Margin="350,140,0,0" VerticalAlignment="Top" Height="25" Width="200"/>
+                    <Label Content="{Binding ElementName=characterDistanceMasterSliderValue, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="550,140,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
+                    <Slider Name="characterDistanceMasterSliderValue" HorizontalAlignment="Left" Maximum="1000" Minimum="0" TickFrequency="10" IsSnapToTickEnabled="True" Margin="350,170,0,0" VerticalAlignment="Top" Height="20" Width="200"/>
+                    <Label Content="0 ms" HorizontalAlignment="Left" Margin="315,165,0,0" VerticalAlignment="Top" Height="25" Width="40"/>
+                    <Label Content="1000 ms" HorizontalAlignment="Left" Margin="550,165,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
+                    <Label Content="Liczba retransmisji:" HorizontalAlignment="Left" Margin="350,200,0,0" VerticalAlignment="Top" Height="25" Width="110"/>
+                    <Label Content="{Binding ElementName=retransmissionsSliderValue, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="460,200,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
+                    <Slider Name="retransmissionsSliderValue" HorizontalAlignment="Left" Maximum="5" Minimum="0" TickFrequency="1" IsSnapToTickEnabled="True"  Margin="350,230,0,0" VerticalAlignment="Top" Height="20" Width="200"/>
+                    <Label Content="0" HorizontalAlignment="Left" Margin="315,225,0,0" VerticalAlignment="Top" Height="25" Width="40"/>
+                    <Label Content="5" HorizontalAlignment="Left" Margin="550,225,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
+                    <Button Content="Otwórz połączenie" Name="OpenConnectionButtonMaster" Click="OpenConnectionMaster"  HorizontalAlignment="Left" Margin="375,270,0,0" VerticalAlignment="Top" Height="30" Width="150"/>
+                    <Button Content="Zamknij połączenie" Name="CloseConnectionButtonMaster" Click="CloseConnectionMaster"  HorizontalAlignment="Left" Margin="375,310,0,0" VerticalAlignment="Top" Height="30" Width="150"/>
 
                     <Label Content="Typ transakcji" HorizontalAlignment="Left" Margin="20,20,0,0" VerticalAlignment="Top" Width="240"  Height="25"/>
                     <ComboBox x:Name="TransactionTypeCombo" HorizontalAlignment="Left" Margin="20,50,0,0" VerticalAlignment="Top" Width="240"
@@ -44,26 +45,36 @@
                     <Label Content="Rozkaz 2" HorizontalAlignment="Left" Margin="20,240,0,0" VerticalAlignment="Top" Width="60" Height="25"/>
                     <TextBox Name="Command2" HorizontalAlignment="Left" Margin="20,270,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="240" Height="70" IsReadOnly="True"/>
                     <Button Name="Command2Button" Click="ExecuteCommand2" Content="Wykonaj rozkaz 2" HorizontalAlignment="Left" Margin="20,340,0,0" VerticalAlignment="Top" Width="240" Height="25"/>
+                    <TextBox x:Name="MasterSendingTextBox" HorizontalAlignment="Left" Margin="660,50,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Height="300" IsReadOnly="True"/>
+                    <Label Content="Przesył" HorizontalAlignment="Left" Margin="660,20,0,0" VerticalAlignment="Top"/>
 
+                    <Ellipse x:Name="ConnectionStateMaster" HorizontalAlignment="Left" Height="20" Margin="390,360,0,0" Stroke="Black" VerticalAlignment="Top" Width="20" Fill="Red"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="420,360,0,0" Text="Stan połączenia" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="14"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Slave">
                 <Grid Background="BlanchedAlmond">
-                    <Label Content="Port" HorizontalAlignment="Left" Margin="345,20,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
-                    <ComboBox x:Name="PortsComboSlave" HorizontalAlignment="Left" Margin="345,50,0,0" VerticalAlignment="Top" Width="200" ItemsSource="{Binding Ports}" SelectedValue="{Binding Path=SelectedPortSlave}" Height="25" DropDownOpened="PortsComboOpen"/>
+                    <Label Content="Port" HorizontalAlignment="Left" Margin="350,20,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
+                    <ComboBox x:Name="PortsComboSlave" HorizontalAlignment="Left" Margin="350,50,0,0" VerticalAlignment="Top" Width="200" ItemsSource="{Binding Ports}" SelectedValue="{Binding Path=SelectedPortSlave}" Height="25" DropDownOpened="PortsComboOpen"/>
                     <Label Content="Maks. odstęp między znakami [ms]:" HorizontalAlignment="Left" Margin="345,80,0,0" VerticalAlignment="Top" Height="25" Width="200"/>
                     <Label Content="{Binding ElementName=characterDistanceSlaveSliderValue, Path=Value, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="545,80,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
-                    <Slider Name="characterDistanceSlaveSliderValue" HorizontalAlignment="Left" Maximum="1000" Minimum="0" TickFrequency="10" IsSnapToTickEnabled="True" Margin="345,110,0,0" VerticalAlignment="Top" Height="20" Width="200"/>
+                    <Slider Name="characterDistanceSlaveSliderValue" HorizontalAlignment="Left" Maximum="1000" Minimum="0" TickFrequency="10" IsSnapToTickEnabled="True" Margin="350,110,0,0" VerticalAlignment="Top" Height="20" Width="200"/>
                     <Label Content="0 ms" HorizontalAlignment="Left" Margin="310,105,0,0" VerticalAlignment="Top" Height="25" Width="40"/>
-                    <Label Content="1000 ms" HorizontalAlignment="Left" Margin="545,105,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
-                    <Label Content="Adres" HorizontalAlignment="Left" Margin="345,140,0,0" VerticalAlignment="Top" Width="40" Height="25"/>
-                    <TextBox Name="SelectedAddressSlave" HorizontalAlignment="Left" Margin="345,170,0,0" Text="123" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Height="25" PreviewTextInput="NumberValidationTextBox" TextChanged="AddressTextChanged"/>
-                    <Button Content="Otwórz połączenie" Name="OpenConnectionButtonSlave" Click="OpenConnectionSlave" HorizontalAlignment="Left" Margin="370,220,0,0" VerticalAlignment="Top" Height="40" Width="150"/>
+                    <Label Content="1000 ms" HorizontalAlignment="Left" Margin="550,105,0,0" VerticalAlignment="Top" Height="25" Width="60"/>
+                    <Label Content="Adres" HorizontalAlignment="Left" Margin="350,140,0,0" VerticalAlignment="Top" Width="40" Height="25"/>
+                    <TextBox Name="SelectedAddressSlave" HorizontalAlignment="Left" Margin="350,170,0,0" Text="123" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Height="25" PreviewTextInput="NumberValidationTextBox" TextChanged="AddressTextChanged"/>
+                    <Button Content="Otwórz połączenie" Name="OpenConnectionButtonSlave" Click="OpenConnectionSlave" HorizontalAlignment="Left" Margin="375,210,0,0" VerticalAlignment="Top" Height="30" Width="150"/>
+                    <Button Content="Zamknij połączenie" Name="CloseConnectionButtonSlave" Click="CloseConnectionSlave" HorizontalAlignment="Left" Margin="375,250,0,0" VerticalAlignment="Top" Height="30" Width="150"/>
 
                     <Label Content="Tekst odebrany (rozkaz 1)" HorizontalAlignment="Left" Margin="20,20,0,0" VerticalAlignment="Top" Width="240" Height="25"/>
-                    <TextBox Name="Command1Slave" HorizontalAlignment="Left" Margin="20,50,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="240" Height="70" IsReadOnly="True"/>
-                    <Label Content="Tekst odpowiedzi (rozkaz 2)" HorizontalAlignment="Left" Margin="20,125,0,0" VerticalAlignment="Top" Width="240" Height="25"/>
-                    <TextBox Name="Command2Slave" HorizontalAlignment="Left" Margin="20,155,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="240" Height="70" TextChanged="SlaveResponseTextChanged"/>
+                    <TextBox Name="Command1Slave" HorizontalAlignment="Left" Margin="20,50,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="240" Height="120" IsReadOnly="True"/>
+                    <Label Content="Tekst odpowiedzi (rozkaz 2)" HorizontalAlignment="Left" Margin="20,175,0,0" VerticalAlignment="Top" Width="240" Height="25"/>
+                    <TextBox Name="Command2Slave" HorizontalAlignment="Left" Margin="20,205,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="240" Height="120" TextChanged="SlaveResponseTextChanged"/>
+                    <TextBox x:Name="SlaveSendingTextBox" HorizontalAlignment="Left" Margin="660,50,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" Height="300" IsReadOnly="True"/>
+                    <Label Content="Przesył" HorizontalAlignment="Left" Margin="660,20,0,0" VerticalAlignment="Top"/>
+
+                    <Ellipse x:Name="ConnectionStateSlave" HorizontalAlignment="Left" Height="20" Margin="390,300,0,0" Stroke="Black" VerticalAlignment="Top" Width="20" Fill="Red"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="420,300,0,0" Text="Stan połączenia" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="14"/>
                 </Grid>
             </TabItem>
         </TabControl>

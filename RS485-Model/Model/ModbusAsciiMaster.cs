@@ -44,6 +44,23 @@ namespace RS485_Model.Model
             serialPort.Open();
         }
 
+        public bool CloseIfOpened()
+        {
+            if (serialPort != null && serialPort.IsOpen)
+            {
+                Close();
+                return true;
+            }
+            return false;
+        }
+
+        public void Close()
+        {
+            serialPort.DiscardOutBuffer();
+            serialPort.DiscardInBuffer();
+            serialPort.Close();
+        }
+
         public async Task<ModbusFrame> MakeRequest(ModbusFrame requestFrame)
         {
             if (requestFrame.Address == 0)
