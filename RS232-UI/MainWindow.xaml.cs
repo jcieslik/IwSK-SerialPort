@@ -316,6 +316,11 @@ namespace RS232_UI
 
 
         }
+
+        private void ClearSendTextbox(object sender, RoutedEventArgs e)
+        {
+            ReceiveTextBox.Text = "";
+        }
     }
 
 }

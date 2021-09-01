@@ -68,5 +68,6 @@
         <Button Content="Transakcja" HorizontalAlignment="Left" Margin="240,279,0,0" VerticalAlignment="Top" Width="180" Height="30" FontSize="16" Click="MakeCustomTransaction"/>
         <TextBox x:Name="TransactionTimeoutTextBox" HorizontalAlignment="Left" Margin="445,284,0,0" Text="1000" TextWrapping="Wrap" VerticalAlignment="Top" Width="145" Height="25" FontSize="16" PreviewTextInput="NumberValidationTextBox" />
         <TextBlock HorizontalAlignment="Left" Margin="445,265,0,0" Text="Czas odpowiedzi (ms)" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="13"/>
+        <Button Content="Wyczyść odbiór" HorizontalAlignment="Left" Margin="620,510,0,0" VerticalAlignment="Top" Width="190" Height="30" Click="ClearSendTextbox" FontSize="16"/>
     </Grid>
 </Window>
