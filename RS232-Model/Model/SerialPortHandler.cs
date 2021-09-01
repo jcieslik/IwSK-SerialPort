@@ -13,6 +13,8 @@ namespace RS232_Model.Model
         //public event EventHandler<ByteReceivedEventArgs> ByteRead;
         public event EventHandler<TextReceivedEventArgs> TextReceived;
         public event EventHandler<bool> ConnectionClosed;
+        public event EventHandler<bool> CtsChanged;
+        public event EventHandler<bool> DsrChanged;
 
         private SerialPort serialPort = new SerialPort();
         private string terminatorString = "";
@@ -20,7 +22,7 @@ namespace RS232_Model.Model
         private readonly object writeLock = new object();
         private bool pingReplyReceived = false;
         
-        //private bool 
+         
 
         public string PingRequest { get; set; } = "PING";
         public string PingReply { get; set; } = "OK";
@@ -95,6 +97,7 @@ namespace RS232_Model.Model
         {
             serialPort.DiscardOutBuffer();
             serialPort.DiscardInBuffer();
+            serialPort.PinChanged -= SerialPinChangedEventHandler;
             serialPort.Close();
         }
 
@@ -233,6 +236,8 @@ namespace RS232_Model.Model
             serialPort.StopBits = (StopBits)StopBitsNumber;
             serialPort.PortName = PortName;
             serialPort.BaudRate = BaudRate;
+            serialPort.PinChanged -= SerialPinChangedEventHandler;
+            serialPort.PinChanged += SerialPinChangedEventHandler;
             SetTerminatorString();
         }
         
@@ -385,6 +390,20 @@ namespace RS232_Model.Model
             {
 
             }
+        }
+
+        private void SerialPinChangedEventHandler(object sender, SerialPinChangedEventArgs e)
+        {
+            //może wystarczyłoby e.EventType == SerialPinChange.CtsChanged ale wartości enuma SerialPinChange sugerują, że mogą to być flagi.
+            if ((e.EventType & SerialPinChange.CtsChanged) != 0)
+            {
+                CtsChanged.Invoke(this, CtsHolding);
+            }
+            if((e.EventType & SerialPinChange.DsrChanged) != 0)
+            {
+                DsrChanged.Invoke(this, DsrHolding);
+            }
+
         }
     }
 }

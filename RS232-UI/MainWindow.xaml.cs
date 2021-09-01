@@ -70,11 +70,56 @@ namespace RS232_UI
                 handler.Open();
                 BrushConverter bc = new BrushConverter();
                 ConnectionState.Fill = (Brush)bc.ConvertFrom("Green");
+                ConfigureDtrRts();
+                DisplayDsrCts();
                 MessageBox.Show("Poprawnie otwarto port", "Port", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch(Exception ex)
             {
                 MessageBox.Show(ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void ConfigureDtrRts()
+        {
+            if(handler.FlowControlType != FlowControlType.DtrDsr)
+            {
+                handler.DtrEnable = (bool)DtrCheckbox.IsChecked;
+            }
+            else
+            {
+                DtrCheckbox.IsEnabled = false;
+                DtrCheckbox.IsChecked = false;
+            }
+            if (handler.FlowControlType != FlowControlType.RtsCts)
+            {
+                handler.RtsEnable = (bool)RtsCheckbox.IsChecked;
+            }
+            else
+            {
+                RtsCheckbox.IsEnabled = false;
+                RtsCheckbox.IsChecked = false;
+            }
+        }
+
+        private void DisplayDsrCts()
+        {
+            BrushConverter bc = new BrushConverter();
+            if (handler.DsrHolding)
+            {
+                DsrState.Fill = (Brush)bc.ConvertFrom("Green");
+            }
+            else
+            {
+                DsrState.Fill = (Brush)bc.ConvertFrom("Red");
+            }
+            if (handler.CtsHolding)
+            {
+                CtsState.Fill = (Brush)bc.ConvertFrom("Green");
+            }
+            else
+            {
+                CtsState.Fill = (Brush)bc.ConvertFrom("Red");
             }
         }
 
@@ -85,6 +130,10 @@ namespace RS232_UI
                 handler.Close();
                 BrushConverter bc = new BrushConverter();
                 ConnectionState.Fill = (Brush)bc.ConvertFrom("Red");
+                DsrState.Fill = (Brush)bc.ConvertFrom("Gray");
+                CtsState.Fill = (Brush)bc.ConvertFrom("Gray");
+                DtrCheckbox.IsEnabled = true;
+                RtsCheckbox.IsEnabled = true;
                 MessageBox.Show("Połączenie zostało zamknięte", "Port", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
@@ -118,6 +167,10 @@ namespace RS232_UI
             handler.ConnectionClosed += ClosedConnection;
             handler.TextReceived -= ReceiveData;//Na wypadek, gdyby handler wcześniej był już zarejestrowany
             handler.TextReceived += ReceiveData;
+            handler.DsrChanged -= DsrChangedHandler;//Na wypadek, gdyby handler wcześniej był już zarejestrowany
+            handler.DsrChanged += DsrChangedHandler;
+            handler.CtsChanged -= CtsChangedHandler;
+            handler.CtsChanged += CtsChangedHandler;
         }
 
         private async void SendData(object sender, RoutedEventArgs e)
@@ -179,5 +232,70 @@ namespace RS232_UI
         {
             PortsCombo.ItemsSource = SerialPort.GetPortNames();
         }
+
+        private void DsrChangedHandler(object sender, bool dsrState)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                BrushConverter bc = new BrushConverter();
+                if (dsrState)
+                {
+                    DsrState.Fill = (Brush)bc.ConvertFrom("Green");
+                }
+                else
+                {
+                    DsrState.Fill = (Brush)bc.ConvertFrom("Red");
+                }
+            });
+        }
+
+        private void CtsChangedHandler(object sender, bool ctsState)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                BrushConverter bc = new BrushConverter();
+                if (ctsState)
+                {
+                    CtsState.Fill = (Brush)bc.ConvertFrom("Green");
+                }
+                else
+                {
+                    CtsState.Fill = (Brush)bc.ConvertFrom("Red");
+                }
+            });
+        }
+
+        private void RtsCheckboxChecked(object sender, RoutedEventArgs e)
+        {
+            if (handler.FlowControlType != FlowControlType.RtsCts)
+            {
+                handler.RtsEnable = (bool)RtsCheckbox.IsChecked;
+            }
+        }
+
+        private void RtsCheckboxUnchecked(object sender, RoutedEventArgs e)
+        {
+            if (handler.FlowControlType != FlowControlType.RtsCts)
+            {
+                handler.RtsEnable = (bool)RtsCheckbox.IsChecked;
+            }
+        }
+
+        private void DtrCheckboxChecked(object sender, RoutedEventArgs e)
+        {
+            if (handler.FlowControlType != FlowControlType.DtrDsr)
+            {
+                handler.DtrEnable = (bool)DtrCheckbox.IsChecked;
+            }
+        }
+
+        private void DtrCheckboxUnchecked(object sender, RoutedEventArgs e)
+        {
+            if (handler.FlowControlType != FlowControlType.DtrDsr)
+            {
+                handler.DtrEnable = (bool)DtrCheckbox.IsChecked;
+            }
+        }
     }
+
 }
