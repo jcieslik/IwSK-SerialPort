@@ -296,6 +296,26 @@ namespace RS232_UI
                 handler.DtrEnable = (bool)DtrCheckbox.IsChecked;
             }
         }
+
+        private async void MakeCustomTransaction(object sender, RoutedEventArgs e)
+        {
+            
+            
+            try
+            {
+                if (!int.TryParse(TransactionTimeoutTextBox.Text, out int timeout))
+                {
+                    throw new Exception("Nieprawidłowy czas odpowiedzi.");
+                }
+                await handler.CustomTransactionAsync(SendTextBox.Text, timeout);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+
+        }
     }
 
 }

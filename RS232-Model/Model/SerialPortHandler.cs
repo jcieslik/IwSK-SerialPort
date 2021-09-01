@@ -21,7 +21,7 @@ namespace RS232_Model.Model
         private Queue<byte> lastReceivedBytes = new Queue<byte>();
         private readonly object writeLock = new object();
         private bool pingReplyReceived = false;
-        
+        private bool transactionReplyReceived = false;
          
 
         public string PingRequest { get; set; } = "PING";
@@ -220,6 +220,45 @@ namespace RS232_Model.Model
             }
         }
 
+        public async Task CustomTransactionAsync(string text, int timeout)
+        {
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+            try
+            {
+                Task transactionTask = DoCustomTransactionAsync(text);
+                Task firstTask = await Task.WhenAny(transactionTask, Task.Delay(timeout));
+                if (firstTask != transactionTask)
+                {
+                    throw new Exception("Przekroczono czas oczekiwania na odpowiedź.");
+                }
+                else if (!transactionTask.IsCompletedSuccessfully)
+                {
+                    throw new Exception("Połączenie jest zamknięte.");
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        private async Task DoCustomTransactionAsync(string text)
+        {
+            try
+            {
+                transactionReplyReceived = false;
+                await WriteAsync(text);
+                await Task.Run(() => {
+                    while (!transactionReplyReceived) { }
+                });
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
         private void ConfigureSerialPort()
         {
             serialPort.DataBits = (int)DataBitsNumber;
@@ -295,6 +334,7 @@ namespace RS232_Model.Model
         {
             if (receivedByte != -1)
             {
+                transactionReplyReceived = true;
                 TextReceivedEventArgs eventArgs = new TextReceivedEventArgs();
                 eventArgs.ReceivedText = Encoding.ASCII.GetString(new byte[] { (byte)receivedByte });
                 TextReceived?.Invoke(this, eventArgs);
@@ -354,6 +394,7 @@ namespace RS232_Model.Model
             bool isPingReply = CheckForPingReplyWithTerminator(receivedText);
             if (!isPingRequest && !isPingReply)
             {
+                transactionReplyReceived = true;
                 TextReceivedEventArgs eventArgs = new TextReceivedEventArgs() { ReceivedText = receivedText };
                 TextReceived?.Invoke(this, eventArgs);
             }

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RS232_UI" xmlns:x1="clr-namespace:RS232_Model.Helpers;assembly=RS232-Model"
         mc:Ignorable="d"
-        Title="MainWindow" Height="560" Width="840">
+        Title="MainWindow" Height="600" Width="840">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Window.Resources>
@@ -40,10 +40,10 @@
         <TextBox x:Name="BaudRateTextBox" HorizontalAlignment="Left" Margin="50,340,0,0" Text="9600&#xD;&#xA;" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="25" FontSize="16" PreviewTextInput="NumberValidationTextBox" TextChanged="BaudRateTextChanged"/>
         <TextBox x:Name="TerminatorTextBox" HorizontalAlignment="Left" Margin="175,240,0,0" TextWrapping="Wrap" MaxLength="2" Height="25" Width="40" VerticalAlignment="Top" FontSize="16" IsEnabled="False"/>
         <TextBox x:Name="SendTextBox" HorizontalAlignment="Left" Margin="240,50,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="350" Height="180" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
-        <TextBox x:Name="ReceiveTextBox" HorizontalAlignment="Left" Margin="240,310,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="350" Height="180" IsReadOnly="True" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
-        <Button x:Name="SendButton" Content="Wyślij" HorizontalAlignment="Left" Margin="315,240,0,0" VerticalAlignment="Top" Width="200" Height="30" Click="SendData" FontSize="16"/>
+        <TextBox x:Name="ReceiveTextBox" HorizontalAlignment="Left" Margin="240,360,0,0" Text="" TextWrapping="Wrap" VerticalAlignment="Top" Width="350" Height="180" IsReadOnly="True" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+        <Button x:Name="SendButton" Content="Wyślij" HorizontalAlignment="Left" Margin="240,238,0,0" VerticalAlignment="Top" Width="180" Height="30" Click="SendData" FontSize="16"/>
         <TextBlock HorizontalAlignment="Left" Margin="240,20,0,0" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="-0.081,-0.574" Width="99" FontSize="18" Height="30"><Run Language="pl-pl" Text="Wysyłanie"/><LineBreak/><Run Language="pl-pl"/></TextBlock>
-        <TextBlock HorizontalAlignment="Left" Margin="240,280,0,0" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="-0.081,-0.574" Width="99" FontSize="18" Height="26"><Run Text="O"/><Run Language="pl-pl" Text="dbieranie"/><LineBreak/><Run Language="pl-pl"/></TextBlock>
+        <TextBlock HorizontalAlignment="Left" Margin="240,329,0,0" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="-0.081,-0.574" Width="99" FontSize="18" Height="26"><Run Text="O"/><Run Language="pl-pl" Text="dbieranie"/><LineBreak/><Run Language="pl-pl"/></TextBlock>
 
         <Button Content="Otwórz połączenie" HorizontalAlignment="Left" Margin="50,380,0,0" VerticalAlignment="Top" Width="120" Height="30" FontSize="13" Click="InitializeConnection"/>
         <TextBlock HorizontalAlignment="Left" Margin="50,20,0,0" Text="Port" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="13"/>
@@ -59,11 +59,14 @@
         <Ellipse x:Name="ConnectionState" HorizontalAlignment="Left" Height="20" Margin="50,465,0,0" Stroke="Black" VerticalAlignment="Top" Width="20" Fill="Red"/>
 
         <TextBlock HorizontalAlignment="Left" Margin="75,465,0,0" Text="Stan połączenia" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="14"/>
-        <Ellipse x:Name="CtsState" HorizontalAlignment="Left" Height="20" Margin="385,284,0,0" Stroke="Black" VerticalAlignment="Top" Width="20" Fill="Gray" RenderTransformOrigin="0.55,1.552"/>
-        <TextBlock HorizontalAlignment="Left" Margin="410,280,0,0" Text="CTS" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="19"/>
-        <Ellipse x:Name="DsrState" HorizontalAlignment="Left" Height="20" Margin="483,284,0,0" Stroke="Black" VerticalAlignment="Top" Width="20" Fill="Gray" RenderTransformOrigin="0.55,1.552"/>
-        <TextBlock HorizontalAlignment="Left" Margin="508,281,0,0" Text="DSR" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="19"/>
+        <Ellipse x:Name="CtsState" HorizontalAlignment="Left" Height="20" Margin="395,332,0,0" Stroke="Black" VerticalAlignment="Top" Width="20" Fill="Gray" RenderTransformOrigin="0.55,1.552"/>
+        <TextBlock HorizontalAlignment="Left" Margin="420,329,0,0" Text="CTS" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="19"/>
+        <Ellipse x:Name="DsrState" HorizontalAlignment="Left" Height="20" Margin="484,332,0,0" Stroke="Black" VerticalAlignment="Top" Width="20" Fill="Gray" RenderTransformOrigin="0.55,1.552"/>
+        <TextBlock HorizontalAlignment="Left" Margin="509,329,0,0" Text="DSR" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="19"/>
         <CheckBox x:Name="RtsCheckbox" Content="RTS" HorizontalAlignment="Left" Margin="387,25,0,0" VerticalAlignment="Top" Checked="RtsCheckboxChecked"  Unchecked="RtsCheckboxUnchecked"/>
         <CheckBox x:Name="DtrCheckbox" Content="DTR" HorizontalAlignment="Left" Margin="484,25,0,0" VerticalAlignment="Top" Checked="DtrCheckboxChecked"  Unchecked="DtrCheckboxUnchecked"/>
+        <Button Content="Transakcja" HorizontalAlignment="Left" Margin="240,279,0,0" VerticalAlignment="Top" Width="180" Height="30" FontSize="16" Click="MakeCustomTransaction"/>
+        <TextBox x:Name="TransactionTimeoutTextBox" HorizontalAlignment="Left" Margin="445,284,0,0" Text="1000" TextWrapping="Wrap" VerticalAlignment="Top" Width="145" Height="25" FontSize="16" PreviewTextInput="NumberValidationTextBox" />
+        <TextBlock HorizontalAlignment="Left" Margin="445,265,0,0" Text="Czas odpowiedzi (ms)" TextWrapping="Wrap" VerticalAlignment="Top" FontSize="13"/>
     </Grid>
 </Window>
